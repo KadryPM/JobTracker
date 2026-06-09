@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobTracker | Perfil</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-user-role="ADMIN">
+  <div class="app-shell" id="appView">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a class="brand-lockup" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+          <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
+          <span class="brand-text">JobTracker</span>
+        </a>
+      </div>
+      <nav class="sidebar__nav" aria-label="Navegación principal">
+        <a class="nav-item" href="dashboard.html"><span class="nav-item__icon" aria-hidden="true">JT</span><span>Dashboard</span></a>
+        <a class="nav-item" href="seguimiento.html"><span class="nav-item__icon" aria-hidden="true">SG</span><span>Seguimiento</span></a>
+        <a class="nav-item nav-item--active" href="perfil.html" aria-current="page"><span class="nav-item__icon" aria-hidden="true">PF</span><span>Perfil</span></a>
+        <a class="nav-item admin-only" href="usuarios.html" data-admin-only><span class="nav-item__icon" aria-hidden="true">US</span><span>Usuarios</span></a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="workspace-card">
+          <p class="workspace-card__label">Cuenta activa</p>
+          <strong>Juan Torres</strong>
+          <span>Administrador</span>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <section class="main-area">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="icon-button topbar__menu" id="menuButton" type="button" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+          <a class="brand-lockup topbar__brand" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+            <img class="brand-logo brand-logo--small" src="assets/logo.png" alt="Logo de JobTracker">
+            <span class="brand-text">JobTracker</span>
+          </a>
+          <div class="topbar__title"><p class="eyebrow">Perfil</p><h1>Configuración personal</h1></div>
+        </div>
+        <div class="topbar__actions">
+          <div class="search-box"><span aria-hidden="true"></span><input type="search" placeholder="Buscar ajustes" aria-label="Buscar ajustes"></div>
+          <button class="button button--secondary" type="button">Guardar cambios</button>
+          <a class="avatar-button" href="perfil.html" aria-label="Cuenta">JT</a>
+        </div>
+      </header>
+
+      <section class="dashboard settings-page">
+        <div class="dashboard__intro">
+          <div><p class="eyebrow">Mi cuenta</p><h2>Gestiona tus datos, preferencias laborales y seguridad.</h2></div>
+          <div class="status-pill"><span></span>Perfil actualizado</div>
+        </div>
+
+        <div class="settings-grid">
+          <article class="panel profile-card">
+            <div class="profile-summary">
+              <div class="profile-avatar">JT</div>
+              <div><p class="eyebrow">Información personal</p><h3>Juan Torres</h3><span>Administrador de talento</span></div>
+            </div>
+            <form class="form-grid">
+              <label class="field"><span>Nombre completo</span><input type="text" value="Juan Torres"></label>
+              <label class="field"><span>Correo</span><input type="email" value="juan.torres@jobtracker.com"></label>
+              <label class="field"><span>Teléfono</span><input type="tel" value="+57 300 123 4567"></label>
+              <label class="field"><span>Ciudad</span><input type="text" value="Bogotá"></label>
+            </form>
+          </article>
+
+          <article class="panel">
+            <div class="panel__header"><div><p class="eyebrow">Preferencias laborales</p><h3>Búsqueda y disponibilidad</h3></div></div>
+            <form class="form-grid">
+              <label class="field"><span>Cargo objetivo</span><input type="text" value="Frontend Developer"></label>
+              <label class="field"><span>Modalidad preferida</span><select><option>Remoto</option><option>Híbrido</option><option>Presencial</option></select></label>
+              <label class="field"><span>Rango salarial</span><input type="text" value="COP 8M - 12M"></label>
+              <label class="field"><span>Disponibilidad</span><select><option>Inmediata</option><option>15 días</option><option>30 días</option></select></label>
+            </form>
+          </article>
+
+          <article class="panel">
+            <div class="panel__header"><div><p class="eyebrow">Seguridad</p><h3>Cambio de contraseña</h3></div></div>
+            <form class="form-grid form-grid--single">
+              <label class="field"><span>Contraseña actual</span><input type="password" placeholder="Contraseña actual"></label>
+              <label class="field"><span>Nueva contraseña</span><input type="password" placeholder="Nueva contraseña"></label>
+              <label class="field"><span>Confirmar contraseña</span><input type="password" placeholder="Confirmar contraseña"></label>
+              <button class="button button--primary form-button" type="button">Actualizar contraseña</button>
+            </form>
+          </article>
+        </div>
+      </section>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

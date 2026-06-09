@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobTracker | Seguimiento</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-user-role="ADMIN">
+  <div class="app-shell" id="appView">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a class="brand-lockup" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+          <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
+          <span class="brand-text">JobTracker</span>
+        </a>
+      </div>
+      <nav class="sidebar__nav" aria-label="Navegación principal">
+        <a class="nav-item" href="dashboard.html"><span class="nav-item__icon" aria-hidden="true">JT</span><span>Dashboard</span></a>
+        <a class="nav-item nav-item--active" href="seguimiento.html" aria-current="page"><span class="nav-item__icon" aria-hidden="true">SG</span><span>Seguimiento</span></a>
+        <a class="nav-item" href="perfil.html"><span class="nav-item__icon" aria-hidden="true">PF</span><span>Perfil</span></a>
+        <a class="nav-item admin-only" href="usuarios.html" data-admin-only><span class="nav-item__icon" aria-hidden="true">US</span><span>Usuarios</span></a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="workspace-card">
+          <p class="workspace-card__label">Espacio activo</p>
+          <strong>Talento profesional</strong>
+          <span>Gestión centralizada</span>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <section class="main-area">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="icon-button topbar__menu" id="menuButton" type="button" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+          <a class="brand-lockup topbar__brand" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+            <img class="brand-logo brand-logo--small" src="assets/logo.png" alt="Logo de JobTracker">
+            <span class="brand-text">JobTracker</span>
+          </a>
+          <div class="topbar__title"><p class="eyebrow">Seguimiento</p><h1>Gestión centralizada</h1></div>
+        </div>
+        <div class="topbar__actions">
+          <div class="search-box"><span aria-hidden="true"></span><input type="search" placeholder="Buscar registros" aria-label="Buscar registros"></div>
+          <button class="button button--secondary" type="button">Nuevo registro</button>
+          <a class="avatar-button" href="perfil.html" aria-label="Cuenta">JT</a>
+        </div>
+      </header>
+
+      <section class="dashboard tracking-page">
+        <div class="dashboard__intro">
+          <div><p class="eyebrow">Pipeline laboral</p><h2>Postulaciones, entrevistas y empresas en una sola vista.</h2></div>
+          <div class="status-pill"><span></span>Datos listos para backend</div>
+        </div>
+
+        <article class="panel tracking-panel">
+          <div class="tabs" role="tablist" aria-label="Secciones de seguimiento">
+            <button class="tab-button is-active" type="button" role="tab" aria-selected="true" aria-controls="postulacionesPanel" id="postulacionesTab" data-tab-target="postulacionesPanel">Postulaciones</button>
+            <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="entrevistasPanel" id="entrevistasTab" data-tab-target="entrevistasPanel">Entrevistas</button>
+            <button class="tab-button" type="button" role="tab" aria-selected="false" aria-controls="empresasPanel" id="empresasTab" data-tab-target="empresasPanel">Empresas</button>
+          </div>
+
+          <section class="tab-panel is-active" role="tabpanel" id="postulacionesPanel" aria-labelledby="postulacionesTab" data-entity="applications">
+            <div class="panel__header table-header"><div><p class="eyebrow">Postulaciones</p><h3>Registro de procesos</h3></div><button class="button button--ghost" type="button">Exportar</button></div>
+            <div class="table-shell">
+              <table class="data-table">
+                <thead><tr><th>Empresa</th><th>Cargo</th><th>Modalidad</th><th>Estado</th><th>Fecha</th><th>Acciones</th></tr></thead>
+                <tbody id="applicationsTableBody">
+                  <tr><td data-label="Empresa">Nexa Talent</td><td data-label="Cargo">Product Designer</td><td data-label="Modalidad">Remoto</td><td data-label="Estado"><span class="status-badge status-badge--applied">Aplicado</span></td><td data-label="Fecha">2026-06-02</td><td data-label="Acciones"><button class="table-action" type="button">Ver</button></td></tr>
+                  <tr><td data-label="Empresa">BlueBridge</td><td data-label="Cargo">Frontend Developer</td><td data-label="Modalidad">Híbrido</td><td data-label="Estado"><span class="status-badge status-badge--review">En revisión</span></td><td data-label="Fecha">2026-06-04</td><td data-label="Acciones"><button class="table-action" type="button">Ver</button></td></tr>
+                  <tr><td data-label="Empresa">GlassPeak</td><td data-label="Cargo">UX Researcher</td><td data-label="Modalidad">Presencial</td><td data-label="Estado"><span class="status-badge status-badge--interview">Entrevista</span></td><td data-label="Fecha">2026-06-05</td><td data-label="Acciones"><button class="table-action" type="button">Ver</button></td></tr>
+                  <tr><td data-label="Empresa">DataNorth</td><td data-label="Cargo">Full Stack Engineer</td><td data-label="Modalidad">Remoto</td><td data-label="Estado"><span class="status-badge status-badge--test">Prueba técnica</span></td><td data-label="Fecha">2026-06-06</td><td data-label="Acciones"><button class="table-action" type="button">Ver</button></td></tr>
+                  <tr><td data-label="Empresa">HireLab</td><td data-label="Cargo">Product Manager</td><td data-label="Modalidad">Híbrido</td><td data-label="Estado"><span class="status-badge status-badge--rejected">Rechazado</span></td><td data-label="Fecha">2026-06-07</td><td data-label="Acciones"><button class="table-action" type="button">Ver</button></td></tr>
+                  <tr><td data-label="Empresa">CloudWorks</td><td data-label="Cargo">Data Analyst</td><td data-label="Modalidad">Remoto</td><td data-label="Estado"><span class="status-badge status-badge--hired">Contratado</span></td><td data-label="Fecha">2026-06-08</td><td data-label="Acciones"><button class="table-action" type="button">Ver</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="tab-panel" role="tabpanel" id="entrevistasPanel" aria-labelledby="entrevistasTab" data-entity="interviews" hidden>
+            <div class="panel__header table-header"><div><p class="eyebrow">Entrevistas</p><h3>Agenda y resultados</h3></div><button class="button button--ghost" type="button">Agendar</button></div>
+            <div class="table-shell">
+              <table class="data-table">
+                <thead><tr><th>Empresa</th><th>Fecha</th><th>Hora</th><th>Modalidad</th><th>Resultado</th></tr></thead>
+                <tbody id="interviewsTableBody">
+                  <tr><td data-label="Empresa">GlassPeak</td><td data-label="Fecha">2026-06-10</td><td data-label="Hora">09:30</td><td data-label="Modalidad">Virtual</td><td data-label="Resultado"><span class="status-badge status-badge--review">Pendiente</span></td></tr>
+                  <tr><td data-label="Empresa">DataNorth</td><td data-label="Fecha">2026-06-11</td><td data-label="Hora">15:00</td><td data-label="Modalidad">Técnica</td><td data-label="Resultado"><span class="status-badge status-badge--test">Prueba asignada</span></td></tr>
+                  <tr><td data-label="Empresa">CloudWorks</td><td data-label="Fecha">2026-06-12</td><td data-label="Hora">11:00</td><td data-label="Modalidad">Virtual</td><td data-label="Resultado"><span class="status-badge status-badge--hired">Oferta</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="tab-panel" role="tabpanel" id="empresasPanel" aria-labelledby="empresasTab" data-entity="companies" hidden>
+            <div class="panel__header table-header"><div><p class="eyebrow">Empresas</p><h3>Directorio de compañías</h3></div><button class="button button--ghost" type="button">Añadir</button></div>
+            <div class="table-shell">
+              <table class="data-table">
+                <thead><tr><th>Nombre</th><th>Sector</th><th>Ciudad</th><th>Sitio web</th></tr></thead>
+                <tbody id="companiesTableBody">
+                  <tr><td data-label="Nombre">Nexa Talent</td><td data-label="Sector">Recursos humanos</td><td data-label="Ciudad">Bogotá</td><td data-label="Sitio web"><a class="table-link" href="#">nexatalent.com</a></td></tr>
+                  <tr><td data-label="Nombre">BlueBridge</td><td data-label="Sector">Tecnología</td><td data-label="Ciudad">Medellín</td><td data-label="Sitio web"><a class="table-link" href="#">bluebridge.co</a></td></tr>
+                  <tr><td data-label="Nombre">CloudWorks</td><td data-label="Sector">SaaS</td><td data-label="Ciudad">Remota</td><td data-label="Sitio web"><a class="table-link" href="#">cloudworks.io</a></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </article>
+      </section>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
+

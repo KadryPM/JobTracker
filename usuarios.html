@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobTracker | Usuarios</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-user-role="ADMIN" data-requires-admin="true">
+  <div class="app-shell" id="appView">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a class="brand-lockup" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+          <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
+          <span class="brand-text">JobTracker</span>
+        </a>
+      </div>
+      <nav class="sidebar__nav" aria-label="Navegación principal">
+        <a class="nav-item" href="dashboard.html"><span class="nav-item__icon" aria-hidden="true">JT</span><span>Dashboard</span></a>
+        <a class="nav-item" href="seguimiento.html"><span class="nav-item__icon" aria-hidden="true">SG</span><span>Seguimiento</span></a>
+        <a class="nav-item" href="perfil.html"><span class="nav-item__icon" aria-hidden="true">PF</span><span>Perfil</span></a>
+        <a class="nav-item nav-item--active admin-only" href="usuarios.html" aria-current="page" data-admin-only><span class="nav-item__icon" aria-hidden="true">US</span><span>Usuarios</span></a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="workspace-card">
+          <p class="workspace-card__label">Rol activo</p>
+          <strong>Administrador</strong>
+          <span>Gestión de accesos</span>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <section class="main-area">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="icon-button topbar__menu" id="menuButton" type="button" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+          <a class="brand-lockup topbar__brand" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+            <img class="brand-logo brand-logo--small" src="assets/logo.png" alt="Logo de JobTracker">
+            <span class="brand-text">JobTracker</span>
+          </a>
+          <div class="topbar__title"><p class="eyebrow">Administración</p><h1>Usuarios</h1></div>
+        </div>
+        <div class="topbar__actions">
+          <div class="search-box"><span aria-hidden="true"></span><input type="search" placeholder="Buscar usuarios" aria-label="Buscar usuarios"></div>
+          <button class="button button--secondary" type="button">Crear usuario</button>
+          <a class="avatar-button" href="perfil.html" aria-label="Cuenta">JT</a>
+        </div>
+      </header>
+
+      <section class="dashboard users-page admin-content">
+        <div class="dashboard__intro">
+          <div><p class="eyebrow">Solo administradores</p><h2>Crea usuarios, edita permisos y controla accesos activos.</h2></div>
+          <div class="status-pill"><span></span>Rol ADMIN</div>
+        </div>
+
+        <div class="users-layout">
+          <article class="panel">
+            <div class="panel__header"><div><p class="eyebrow">Nuevo usuario</p><h3>Datos de acceso</h3></div></div>
+            <form class="form-grid form-grid--single">
+              <label class="field"><span>Nombre</span><input type="text" placeholder="Nombre completo"></label>
+              <label class="field"><span>Correo</span><input type="email" placeholder="correo@empresa.com"></label>
+              <label class="field"><span>Rol</span><select><option>USUARIO</option><option>ADMIN</option></select></label>
+              <label class="field"><span>Estado</span><select><option>Activo</option><option>Inactivo</option></select></label>
+              <button class="button button--primary form-button" type="button">Crear usuario</button>
+            </form>
+          </article>
+
+          <article class="panel users-table-panel">
+            <div class="panel__header table-header"><div><p class="eyebrow">Usuarios</p><h3>Control de cuentas</h3></div><button class="button button--ghost" type="button">Sincronizar</button></div>
+            <div class="table-shell">
+              <table class="data-table users-table">
+                <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th>Acciones</th></tr></thead>
+                <tbody id="usersTableBody">
+                  <tr><td data-label="Nombre">Juan Torres</td><td data-label="Correo">juan.torres@jobtracker.com</td><td data-label="Rol"><span class="role-badge role-badge--admin">ADMIN</span></td><td data-label="Estado"><span class="status-badge status-badge--hired">Activo</span></td><td data-label="Último acceso">2026-06-09</td><td data-label="Acciones"><div class="action-group"><button class="table-action" type="button">Editar</button><button class="table-action" type="button">Desactivar</button></div></td></tr>
+                  <tr><td data-label="Nombre">Laura Méndez</td><td data-label="Correo">laura.mendez@jobtracker.com</td><td data-label="Rol"><span class="role-badge">USUARIO</span></td><td data-label="Estado"><span class="status-badge status-badge--hired">Activo</span></td><td data-label="Último acceso">2026-06-08</td><td data-label="Acciones"><div class="action-group"><button class="table-action" type="button">Editar</button><button class="table-action" type="button">Desactivar</button></div></td></tr>
+                  <tr><td data-label="Nombre">Andrés Rojas</td><td data-label="Correo">andres.rojas@jobtracker.com</td><td data-label="Rol"><span class="role-badge">USUARIO</span></td><td data-label="Estado"><span class="status-badge status-badge--rejected">Inactivo</span></td><td data-label="Último acceso">2026-05-28</td><td data-label="Acciones"><div class="action-group"><button class="table-action" type="button">Editar</button><button class="table-action" type="button">Activar</button></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dashboard access-denied" hidden>
+        <article class="panel empty-state">
+          <p class="eyebrow">Acceso restringido</p>
+          <h2>Esta página está disponible solo para administradores.</h2>
+          <p>Tu rol actual no permite gestionar usuarios. El menú Usuarios se ocultará automáticamente para cuentas USUARIO.</p>
+          <a class="button button--secondary" href="dashboard.html">Volver al dashboard</a>
+        </article>
+      </section>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

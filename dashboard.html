@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobTracker | Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-user-role="ADMIN">
+  <div class="app-shell" id="appView">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__header">
+        <a class="brand-lockup" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+          <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
+          <span class="brand-text">JobTracker</span>
+        </a>
+      </div>
+      <nav class="sidebar__nav" aria-label="Navegación principal">
+        <a class="nav-item nav-item--active" href="dashboard.html" aria-current="page"><span class="nav-item__icon" aria-hidden="true">JT</span><span>Dashboard</span></a>
+        <a class="nav-item" href="seguimiento.html"><span class="nav-item__icon" aria-hidden="true">SG</span><span>Seguimiento</span></a>
+        <a class="nav-item" href="perfil.html"><span class="nav-item__icon" aria-hidden="true">PF</span><span>Perfil</span></a>
+        <a class="nav-item admin-only" href="usuarios.html" data-admin-only><span class="nav-item__icon" aria-hidden="true">US</span><span>Usuarios</span></a>
+      </nav>
+      <div class="sidebar__footer">
+        <div class="workspace-card">
+          <p class="workspace-card__label">Espacio activo</p>
+          <strong>Talento profesional</strong>
+          <span>Base visual inicial</span>
+        </div>
+      </div>
+    </aside>
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <section class="main-area">
+      <header class="topbar">
+        <div class="topbar__left">
+          <button class="icon-button topbar__menu" id="menuButton" type="button" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+          <a class="brand-lockup topbar__brand" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+            <img class="brand-logo brand-logo--small" src="assets/logo.png" alt="Logo de JobTracker">
+            <span class="brand-text">JobTracker</span>
+          </a>
+          <div class="topbar__title"><p class="eyebrow">Dashboard</p><h1>Resumen ejecutivo</h1></div>
+        </div>
+        <div class="topbar__actions">
+          <div class="search-box"><span aria-hidden="true"></span><input type="search" placeholder="Buscar en el panel" aria-label="Buscar en el panel"></div>
+          <a class="button button--secondary" href="seguimiento.html">Nuevo registro</a>
+          <a class="avatar-button" href="perfil.html" aria-label="Cuenta">JT</a>
+        </div>
+      </header>
+
+      <section class="dashboard">
+        <div class="dashboard__intro">
+          <div><p class="eyebrow">Estado general</p><h2>Tu operación de seguimiento, lista para crecer.</h2></div>
+          <div class="status-pill"><span></span>Sistema activo</div>
+        </div>
+
+        <div class="metrics-grid">
+          <article class="metric-card"><p>Actividad total</p><strong>128</strong><span class="metric-card__trend metric-card__trend--up">+18% este mes</span></article>
+          <article class="metric-card"><p>Procesos activos</p><strong>34</strong><span class="metric-card__trend metric-card__trend--neutral">12 en prioridad alta</span></article>
+          <article class="metric-card"><p>Tasa de avance</p><strong>72%</strong><span class="metric-card__trend metric-card__trend--up">+9 puntos</span></article>
+          <article class="metric-card"><p>Tiempo promedio</p><strong>6.4d</strong><span class="metric-card__trend metric-card__trend--down">-1.2 días</span></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <article class="panel panel--wide">
+            <div class="panel__header"><div><p class="eyebrow">Rendimiento</p><h3>Actividad semanal</h3></div><a class="button button--ghost" href="seguimiento.html">Ver detalle</a></div>
+            <div class="bar-chart" aria-label="Gráfico de actividad semanal"><span class="bar-chart__bar bar-chart__bar--42"></span><span class="bar-chart__bar bar-chart__bar--58"></span><span class="bar-chart__bar bar-chart__bar--51"></span><span class="bar-chart__bar bar-chart__bar--74"></span><span class="bar-chart__bar bar-chart__bar--66"></span><span class="bar-chart__bar bar-chart__bar--86"></span><span class="bar-chart__bar bar-chart__bar--63"></span></div>
+            <div class="chart-labels" aria-hidden="true"><span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span></div>
+          </article>
+          <article class="panel">
+            <div class="panel__header"><div><p class="eyebrow">Prioridad</p><h3>Foco del día</h3></div></div>
+            <ul class="focus-list">
+              <li><span class="focus-list__dot focus-list__dot--primary"></span><div><strong>Revisar pipeline</strong><p>Detectar acciones bloqueadas.</p></div></li>
+              <li><span class="focus-list__dot focus-list__dot--accent"></span><div><strong>Actualizar métricas</strong><p>Mantener datos ejecutivos al día.</p></div></li>
+              <li><span class="focus-list__dot focus-list__dot--success"></span><div><strong>Preparar reporte</strong><p>Consolidar avance semanal.</p></div></li>
+            </ul>
+          </article>
+          <article class="panel">
+            <div class="panel__header"><div><p class="eyebrow">Distribución</p><h3>Salud del tablero</h3></div></div>
+            <div class="health-score"><div class="health-score__ring"><span>84%</span></div><p>Buen nivel de actualización y visibilidad operativa.</p></div>
+          </article>
+        </div>
+      </section>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
+
