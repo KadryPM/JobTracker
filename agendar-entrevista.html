@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTracker | Agendar entrevista</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="auth-page" id="createView">
+        <section class="auth-panel">
+            <div class="auth-card">
+            <div class="brand-lockup auth-card__brand">
+                <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
+                <span class="brand-text">JobTracker</span>
+            </div>
+            <div class="section-heading">
+                <p class="eyebrow">Entrevistas</p>
+                <h2>Agendar entrevista</h2>
+                <p>Registra una nueva entrevista en tu proceso de seguimiento.</p>
+            </div>
+            <form class="login-form">
+                <label class="field">
+                <span>Empresa</span>
+                <input type="text" placeholder="Ej: GlassPeak" required>
+                </label>
+                <label class="field">
+                <span>Fecha</span>
+                <input type="date" required>
+                </label>
+                <label class="field">
+                <span>Hora</span>
+                <input type="time" required>
+                </label>
+                <label class="field">
+                <span>Modalidad</span>
+                <input type="text" placeholder="Virtual / Técnica / Presencial" required>
+                </label>
+                <label class="field">
+                <span>Resultado inicial</span>
+                <select>
+                    <option selected>Pendiente</option>
+                    <option>Prueba asignada</option>
+                    <option>Oferta</option>
+                    <option>Rechazado</option>
+                </select>
+                </label>
+                <button class="button button--primary" type="submit">
+                Agendar entrevista
+                </button>
+                <a class="button button--secondary" href="seguimiento.html">
+                Cancelar
+                </a>
+            </form>
+            </div>
+        </section>
+    </main>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobTracker | Nueva postulación</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="auth-page" id="createView">
+        <!-- SOLO PANEL DEL FORMULARIO -->
+        <section class="auth-panel">
+
+            <div class="auth-card">
+
+            <div class="brand-lockup auth-card__brand">
+                <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
+                <span class="brand-text">JobTracker</span>
+            </div>
+
+            <div class="section-heading">
+                <p class="eyebrow">Nueva postulación</p>
+                <h2>Registrar proceso</h2>
+                <p>Agrega una nueva oportunidad a tu seguimiento.</p>
+            </div>
+
+            <form class="login-form">
+
+                <label class="field">
+                <span>Empresa</span>
+                <input type="text" placeholder="Ej: Nexa Talent" required>
+                </label>
+
+                <label class="field">
+                <span>Cargo</span>
+                <input type="text" placeholder="Ej: Frontend Developer" required>
+                </label>
+
+                <label class="field">
+                <span>Modalidad</span>
+                <input type="text" placeholder="Remoto / Híbrido / Presencial" required>
+                </label>
+
+                <label class="field">
+                <span>Fecha</span>
+                <input type="date" required>
+                </label>
+
+                <label class="field">
+                <span>Estado</span>
+                <select>
+                    <option>Aplicado</option>
+                    <option>En revisión</option>
+                    <option>Entrevista</option>
+                    <option>Prueba técnica</option>
+                    <option>Rechazado</option>
+                    <option>Contratado</option>
+                </select>
+                </label>
+
+                <button class="button button--primary" type="submit">
+                Guardar
+                </button>
+
+                <a class="button button--secondary" href="seguimiento.html">
+                Cancelar
+                </a>
+
+            </form>
+
+            </div>
+
+        </section>
+    </main>
+<script src="app.js"></script>
+</body>
+</html>

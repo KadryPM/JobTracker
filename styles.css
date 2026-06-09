@@ -641,3 +641,22 @@ button, input { font: inherit; }
     justify-content: flex-end;
   }
 }
+
+#createView.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+#createView .auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+.logout-button {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
