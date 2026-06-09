@@ -81,3 +81,10 @@ window.addEventListener("keydown", (event) => {
     closeSidebar();
   }
 });
+
+document.querySelectorAll(".delete-btn").forEach(btn => {
+  btn.addEventListener("click", (e) => {
+    const row = e.target.closest("tr");
+    row.remove();
+  });
+});

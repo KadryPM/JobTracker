@@ -66,14 +66,14 @@
           </article>
 
           <article class="panel users-table-panel">
-            <div class="panel__header table-header"><div><p class="eyebrow">Usuarios</p><h3>Control de cuentas</h3></div><button class="button button--ghost" type="button">Sincronizar</button></div>
+            <div class="panel__header table-header"><div><p class="eyebrow">Usuarios</p><h3>Control de cuentas</h3></div></div>
             <div class="table-shell">
               <table class="data-table users-table">
                 <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th>Acciones</th></tr></thead>
                 <tbody id="usersTableBody">
-                  <tr><td data-label="Nombre">Juan Torres</td><td data-label="Correo">juan.torres@jobtracker.com</td><td data-label="Rol"><span class="role-badge role-badge--admin">ADMIN</span></td><td data-label="Estado"><span class="status-badge status-badge--hired">Activo</span></td><td data-label="Último acceso">2026-06-09</td><td data-label="Acciones"><div class="action-group"><button class="table-action" type="button">Editar</button><button class="table-action" type="button">Desactivar</button></div></td></tr>
-                  <tr><td data-label="Nombre">Laura Méndez</td><td data-label="Correo">laura.mendez@jobtracker.com</td><td data-label="Rol"><span class="role-badge">USUARIO</span></td><td data-label="Estado"><span class="status-badge status-badge--hired">Activo</span></td><td data-label="Último acceso">2026-06-08</td><td data-label="Acciones"><div class="action-group"><button class="table-action" type="button">Editar</button><button class="table-action" type="button">Desactivar</button></div></td></tr>
-                  <tr><td data-label="Nombre">Andrés Rojas</td><td data-label="Correo">andres.rojas@jobtracker.com</td><td data-label="Rol"><span class="role-badge">USUARIO</span></td><td data-label="Estado"><span class="status-badge status-badge--rejected">Inactivo</span></td><td data-label="Último acceso">2026-05-28</td><td data-label="Acciones"><div class="action-group"><button class="table-action" type="button">Editar</button><button class="table-action" type="button">Activar</button></div></td></tr>
+                  <tr><td data-label="Nombre">Juan Torres</td><td data-label="Correo">juan.torres@jobtracker.com</td><td data-label="Rol"><span class="role-badge role-badge--admin">ADMIN</span></td><td data-label="Estado"><span class="status-badge status-badge--hired">Activo</span></td><td data-label="Último acceso">2026-06-09</td><td data-label="Acciones"><div class="action-group"><div class="action-group"><button class="table-action delete-btn" type="button">Eliminar</button></div></div></td></tr>
+                  <tr><td data-label="Nombre">Laura Méndez</td><td data-label="Correo">laura.mendez@jobtracker.com</td><td data-label="Rol"><span class="role-badge">USUARIO</span></td><td data-label="Estado"><span class="status-badge status-badge--hired">Activo</span></td><td data-label="Último acceso">2026-06-08</td><td data-label="Acciones"><div class="action-group"><button class="table-action delete-btn" type="button">Eliminar</button></div></td></tr>
+                  <tr><td data-label="Nombre">Andrés Rojas</td><td data-label="Correo">andres.rojas@jobtracker.com</td><td data-label="Rol"><span class="role-badge">USUARIO</span></td><td data-label="Estado"><span class="status-badge status-badge--rejected">Inactivo</span></td><td data-label="Último acceso">2026-05-28</td><td data-label="Acciones"><div class="action-group"><button class="table-action delete-btn" type="button">Eliminar</button></div></td></tr>
                 </tbody>
               </table>
             </div>
@@ -91,6 +91,36 @@
       </section>
     </section>
   </div>
-  <script src="app.js"></script>
+  <div id="editModal" class="modal" hidden>
+  <div class="modal-content">
+    <h3>Editar usuario</h3>
+
+    <label>Nombre
+      <input type="text" id="editName">
+    </label>
+
+    <label>Correo
+      <input type="email" id="editEmail">
+    </label>
+
+    <label>Rol
+      <select id="editRole">
+        <option>USUARIO</option>
+        <option>ADMIN</option>
+      </select>
+    </label>
+
+    <label>Estado
+      <select id="editStatus">
+        <option>Activo</option>
+        <option>Inactivo</option>
+      </select>
+    </label>
+
+    <button id="saveEdit">Guardar</button>
+    <button id="closeEdit">Cancelar</button>
+  </div>
+</div>
+  <script src="./app.js"></script>
 </body>
 </html>

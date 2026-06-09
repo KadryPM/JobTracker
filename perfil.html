@@ -6,21 +6,27 @@
   <title>JobTracker | Perfil</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body data-user-role="ADMIN">
+
   <div class="app-shell" id="appView">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar__header">
-        <a class="brand-lockup" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
+        <a class="brand-lockup" href="dashboard.html">
           <img class="brand-logo" src="assets/logo.png" alt="Logo de JobTracker">
           <span class="brand-text">JobTracker</span>
         </a>
       </div>
-      <nav class="sidebar__nav" aria-label="Navegación principal">
-        <a class="nav-item" href="dashboard.html"><span class="nav-item__icon" aria-hidden="true">JT</span><span>Dashboard</span></a>
-        <a class="nav-item" href="seguimiento.html"><span class="nav-item__icon" aria-hidden="true">SG</span><span>Seguimiento</span></a>
-        <a class="nav-item nav-item--active" href="perfil.html" aria-current="page"><span class="nav-item__icon" aria-hidden="true">PF</span><span>Perfil</span></a>
-        <a class="nav-item admin-only" href="usuarios.html" data-admin-only><span class="nav-item__icon" aria-hidden="true">US</span><span>Usuarios</span></a>
+
+      <nav class="sidebar__nav">
+        <a class="nav-item" href="dashboard.html">Dashboard</a>
+        <a class="nav-item" href="seguimiento.html">Seguimiento</a>
+        <a class="nav-item nav-item--active" href="perfil.html">Perfil</a>
+        <a class="nav-item admin-only" href="usuarios.html">Usuarios</a>
       </nav>
+
       <div class="sidebar__footer">
         <div class="workspace-card">
           <p class="workspace-card__label">Cuenta activa</p>
@@ -29,67 +35,177 @@
         </div>
       </div>
     </aside>
+
     <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
+    <!-- MAIN -->
     <section class="main-area">
+
+      <!-- TOPBAR -->
       <header class="topbar">
         <div class="topbar__left">
-          <button class="icon-button topbar__menu" id="menuButton" type="button" aria-label="Abrir menú"><span></span><span></span><span></span></button>
-          <a class="brand-lockup topbar__brand" href="dashboard.html" aria-label="Ir al dashboard de JobTracker">
-            <img class="brand-logo brand-logo--small" src="assets/logo.png" alt="Logo de JobTracker">
+
+          <a class="brand-lockup topbar__brand" href="dashboard.html">
+            <img class="brand-logo brand-logo--small" src="assets/logo.png" alt="">
             <span class="brand-text">JobTracker</span>
           </a>
-          <div class="topbar__title"><p class="eyebrow">Perfil</p><h1>Configuración personal</h1></div>
+
+          <div class="topbar__title">
+            <p class="eyebrow">Perfil</p>
+            <h1>Configuración personal</h1>
+          </div>
+
         </div>
+
         <div class="topbar__actions">
-          <div class="search-box"><span aria-hidden="true"></span><input type="search" placeholder="Buscar ajustes" aria-label="Buscar ajustes"></div>
-          <a class="avatar-button logout-button" href="index.html" aria-label="Cerrar sesión">Salir</a>
+
+          <a class="avatar-button logout-button" href="index.html">
+            Salir
+          </a>
         </div>
       </header>
 
+      <!-- CONTENT -->
       <section class="dashboard settings-page">
+
         <div class="dashboard__intro">
-          <div><p class="eyebrow">Mi cuenta</p><h2>Gestiona tus datos, preferencias laborales y seguridad.</h2></div>
-          <div class="status-pill"><span></span>Perfil actualizado</div>
+          <div>
+            <p class="eyebrow">Mi cuenta</p>
+            <h2>Gestiona tus datos y preferencias.</h2>
+          </div>
+
+          <div class="status-pill">
+            Perfil actualizado
+          </div>
         </div>
 
+        <!-- GRID -->
         <div class="settings-grid">
+
+          <!-- PERFIL -->
           <article class="panel profile-card">
+
             <div class="profile-summary">
               <div class="profile-avatar">JT</div>
-              <div><p class="eyebrow">Información personal</p><h3>Juan Torres</h3><span>Administrador de talento</span></div>
+              <div>
+                <p class="eyebrow">Información personal</p>
+                <h3>Juan Torres</h3>
+                <span>Administrador de talento</span>
+              </div>
             </div>
-            <form class="form-grid">
-              <label class="field"><span>Nombre completo</span><input type="text" value="Juan Torres"></label>
-              <label class="field"><span>Correo</span><input type="email" value="juan.torres@jobtracker.com"></label>
-              <label class="field"><span>Teléfono</span><input type="tel" value="+57 300 123 4567"></label>
-              <label class="field"><span>Ciudad</span><input type="text" value="Bogotá"></label>
+
+            <form id="profileForm" class="form-grid">
+
+              <label class="field">
+                <span>Nombre completo</span>
+                <input type="text" value="Juan Torres">
+              </label>
+
+              <label class="field">
+                <span>Correo</span>
+                <input type="email" value="juan.torres@jobtracker.com">
+              </label>
+
+              <label class="field">
+                <span>Teléfono</span>
+                <input type="tel" value="+57 300 123 4567">
+              </label>
+
+              <label class="field">
+                <span>Ciudad</span>
+                <input type="text" value="Bogotá">
+              </label>
+
             </form>
           </article>
 
+          <!-- PREFERENCIAS -->
           <article class="panel">
-            <div class="panel__header"><div><p class="eyebrow">Preferencias laborales</p><h3>Búsqueda y disponibilidad</h3></div></div>
-            <form class="form-grid">
-              <label class="field"><span>Cargo objetivo</span><input type="text" value="Frontend Developer"></label>
-              <label class="field"><span>Modalidad preferida</span><select><option>Remoto</option><option>Híbrido</option><option>Presencial</option></select></label>
-              <label class="field"><span>Rango salarial</span><input type="text" value="COP 8M - 12M"></label>
-              <label class="field"><span>Disponibilidad</span><select><option>Inmediata</option><option>15 días</option><option>30 días</option></select></label>
+
+            <div class="panel__header">
+              <p class="eyebrow">Preferencias laborales</p>
+              <h3>Búsqueda y disponibilidad</h3>
+            </div>
+
+            <form id="preferencesForm" class="form-grid">
+
+              <label class="field">
+                <span>Cargo objetivo</span>
+                <input type="text" value="Frontend Developer">
+              </label>
+
+              <label class="field">
+                <span>Modalidad preferida</span>
+                <select>
+                  <option>Remoto</option>
+                  <option>Híbrido</option>
+                  <option>Presencial</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Rango salarial</span>
+                <input type="text" value="COP 8M - 12M">
+              </label>
+
+              <label class="field">
+                <span>Disponibilidad</span>
+                <select>
+                  <option>Inmediata</option>
+                  <option>15 días</option>
+                  <option>30 días</option>
+                </select>
+              </label>
+
             </form>
           </article>
 
+          <!-- SEGURIDAD -->
           <article class="panel">
-            <div class="panel__header"><div><p class="eyebrow">Seguridad</p><h3>Cambio de contraseña</h3></div></div>
-            <form class="form-grid form-grid--single">
-              <label class="field"><span>Contraseña actual</span><input type="password" placeholder="Contraseña actual"></label>
-              <label class="field"><span>Nueva contraseña</span><input type="password" placeholder="Nueva contraseña"></label>
-              <label class="field"><span>Confirmar contraseña</span><input type="password" placeholder="Confirmar contraseña"></label>
-              <button class="button button--primary form-button" type="button">Actualizar contraseña</button>
+
+            <div class="panel__header">
+              <p class="eyebrow">Seguridad</p>
+              <h3>Cambio de contraseña</h3>
+            </div>
+
+            <form id="passwordForm" class="form-grid form-grid--single">
+
+              <label class="field">
+                <span>Contraseña actual</span>
+                <input type="password" placeholder="Solo si deseas cambiarla">
+              </label>
+
+              <label class="field">
+                <span>Nueva contraseña</span>
+                <input type="password" placeholder="Nueva contraseña">
+              </label>
+
+              <label class="field">
+                <span>Confirmar contraseña</span>
+                <input type="password" placeholder="Confirmar contraseña">
+              </label>
+
+              <button type="button" id="changePasswordBtn" class="button button--secondary">
+                Cambiar contraseña
+              </button>
+
             </form>
           </article>
+
         </div>
+
+        <!-- BOTÓN GLOBAL -->
+        <div class="settings-actions">
+          <button id="saveProfileBtn" class="button button--primary" type="button">
+            Guardar cambios
+          </button>
+        </div>
+
       </section>
+
     </section>
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>
