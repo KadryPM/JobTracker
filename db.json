@@ -1,18 +1,18 @@
 {
-  "users": [
-    {
-      "id": "2",
-      "name": "Juan Pere",
-      "email": "juan@gmail.com",
-      "role": "ADMIN",
-      "status": "active"
-    },
-    {
-      "name": "dddd",
-      "email": "nnnn@mail.dom",
-      "role": "ADMIN",
-      "id": "tOvOCwk5tYE"
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+"users": [
+        {
+        "id": "2",
+        "name": "Juan Pere",
+        "email": "juan@gmail.com",
+        "role": "ADMIN",
+        "status": "active"
+        },
+        {
+        "name": "dddd",
+        "email": "nnnn@mail.dom",
+        "role": "ADMIN",
+        "id": "tOvOCwk5tYE"
+        }
+    ],
+"$schema": "./node_modules/json-server/schema.json"
 }
