@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JobTracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ===========================================================
+     VARIABLES Y RESET
+     =========================================================== */
+  :root{
+    --bg:#161D2B;
+    --surface:#1F2A3D;
+    --surface-2:#27344A;
+    --border:#34415A;
+    --text:#E8EBF0;
+    --text-dim:#9AA7BD;
+    --accent:#5B7FFF;
+    --accent-dim:#3A4F99;
+    --success:#4ADE80;
+    --warning:#FBBF24;
+    --danger:#F87171;
+    --info:#60A5FA;
+    --radius:10px;
+    --sidebar-w:230px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+  }
+
+  h1,h2,h3,h4,.brand,.nav-link,.btn,.stat-value{
+    font-family:'Sora',sans-serif;
+  }
+
+  a{color:inherit;text-decoration:none;}
+
+  /* ===========================================================
+     SIDEBAR
+     =========================================================== */
+  .sidebar{
+    width:var(--sidebar-w);
+    background:var(--surface);
+    border-right:1px solid var(--border);
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    top:0;left:0;bottom:0;
+    z-index:100;
+    transition:transform .25s ease;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:24px 22px;
+    font-weight:800;
+    font-size:1.25rem;
+    letter-spacing:.5px;
+    border-bottom:1px solid var(--border);
+  }
+  .brand-mark{
+    width:32px;height:32px;border-radius:8px;
+    background:linear-gradient(135deg,var(--accent),var(--info));
+    display:flex;align-items:center;justify-content:center;
+    font-size:1rem;font-weight:800;color:#0E1420;
+    flex-shrink:0;
+  }
+
+  nav.nav-menu{
+    flex:1;
+    padding:16px 12px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+  }
+
+  .nav-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:11px 14px;
+    border-radius:8px;
+    color:var(--text-dim);
+    font-weight:600;
+    font-size:.92rem;
+    cursor:pointer;
+    border:none;
+    background:none;
+    width:100%;
+    text-align:left;
+    transition:background .15s, color .15s;
+  }
+  .nav-link:hover{background:var(--surface-2);color:var(--text);}
+  .nav-link.active{
+    background:var(--accent-dim);
+    color:#fff;
+  }
+  .nav-link .icon{
+    width:18px;height:18px;
+    flex-shrink:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .sidebar-footer{
+    padding:16px 22px;
+    border-top:1px solid var(--border);
+    font-size:.78rem;
+    color:var(--text-dim);
+  }
+
+  /* Mobile toggle */
+  .menu-toggle{
+    display:none;
+    position:fixed;
+    top:16px;left:16px;
+    z-index:200;
+    background:var(--surface);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    width:42px;height:42px;
+    font-size:1.2rem;
+    align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+
+  /* ===========================================================
+     CONTENIDO PRINCIPAL
+     =========================================================== */
+  .main{
+    margin-left:var(--sidebar-w);
+    flex:1;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 32px;
+    border-bottom:1px solid var(--border);
+    background:var(--bg);
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .topbar h1{font-size:1.4rem;font-weight:700;}
+  .topbar .subtitle{font-size:.85rem;color:var(--text-dim);margin-top:2px;}
+
+  .content{
+    padding:28px 32px;
+    flex:1;
+  }
+
+  /* secciones de página */
+  .page{display:none;}
+  .page.active{display:block;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ===========================================================
+     COMPONENTES GENERALES
+     =========================================================== */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px;
+  }
+
+  .grid-stats{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:16px;
+    margin-bottom:28px;
+  }
+
+  .stat-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    position:relative;
+    overflow:hidden;
+  }
+  .stat-card .stat-label{
+    font-size:.78rem;
+    color:var(--text-dim);
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:8px;
+  }
+  .stat-card .stat-value{
+    font-size:2rem;
+    font-weight:800;
+  }
+  .stat-card .stat-bar{
+    height:4px;
+    border-radius:4px;
+    margin-top:14px;
+    background:var(--border);
+    overflow:hidden;
+  }
+  .stat-card .stat-bar span{
+    display:block;height:100%;border-radius:4px;
+  }
+
+  .section-title{
+    font-size:1.05rem;
+    font-weight:700;
+    margin-bottom:14px;
+  }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:24px;
+    overflow:hidden;
+  }
+  .panel-header{
+    padding:18px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .panel-body{padding:20px;}
+
+  /* Formularios */
+  .form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:14px;
+    margin-bottom:14px;
+  }
+  label{
+    display:block;
+    font-size:.8rem;
+    font-weight:600;
+    color:var(--text-dim);
+    margin-bottom:6px;
+  }
+  input,select,textarea{
+    width:100%;
+    background:var(--surface-2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 12px;
+    border-radius:8px;
+    font-family:'Inter',sans-serif;
+    font-size:.9rem;
+    outline:none;
+    transition:border-color .15s;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+  textarea{resize:vertical;min-height:70px;}
+
+  /* Botones */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 18px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--text);
+    font-weight:600;
+    font-size:.85rem;
+    cursor:pointer;
+    transition:transform .1s, background .15s, border-color .15s;
+  }
+  .btn:hover{background:var(--border);}
+  .btn:active{transform:scale(.97);}
+  .btn-primary{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+  .btn-primary:hover{background:#4A6BE0;}
+  .btn-danger{
+    background:transparent;
+    border-color:var(--danger);
+    color:var(--danger);
+  }
+  .btn-danger:hover{background:rgba(248,113,113,.12);}
+  .btn-sm{padding:6px 12px;font-size:.78rem;}
+  .btn-ghost{
+    background:transparent;border-color:var(--border);
+  }
+
+  /* Tablas */
+  .table-wrap{overflow-x:auto;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.88rem;
+  }
+  th,td{
+    padding:12px 14px;
+    text-align:left;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  th{
+    color:var(--text-dim);
+    font-weight:600;
+    font-size:.75rem;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+  }
+  tbody tr:hover{background:var(--surface-2);}
+  td.actions{display:flex;gap:8px;}
+
+  /* Badges de estado - elemento distintivo / lenguaje visual */
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:99px;
+    font-size:.75rem;
+    font-weight:700;
+    letter-spacing:.3px;
+  }
+  .badge::before{
+    content:'';
+    width:7px;height:7px;
+    border-radius:50%;
+    background:currentColor;
+  }
+  .badge-aplicada{background:rgba(96,165,250,.15);color:var(--info);}
+  .badge-revision{background:rgba(251,191,36,.15);color:var(--warning);}
+  .badge-entrevista{background:rgba(91,127,255,.15);color:var(--accent);}
+  .badge-oferta{background:rgba(74,222,128,.15);color:var(--success);}
+  .badge-rechazada{background:rgba(248,113,113,.15);color:var(--danger);}
+
+  .badge-admin{background:rgba(91,127,255,.15);color:var(--accent);}
+  .badge-recruiter{background:rgba(74,222,128,.15);color:var(--success);}
+  .badge-user{background:rgba(154,167,189,.15);color:var(--text-dim);}
+
+  /* Modal */
+  .modal-overlay{
+    position:fixed;inset:0;
+    background:rgba(10,14,24,.6);
+    display:none;
+    align-items:center;justify-content:center;
+    z-index:1000;
+    padding:20px;
+  }
+  .modal-overlay.active{display:flex;}
+  .modal{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    width:100%;
+    max-width:480px;
+    max-height:90vh;
+    overflow-y:auto;
+    padding:24px;
+  }
+  .modal h3{margin-bottom:16px;font-size:1.1rem;}
+  .modal-actions{
+    display:flex;justify-content:flex-end;gap:10px;margin-top:16px;
+  }
+
+  /* Empty state */
+  .empty-state{
+    text-align:center;
+    padding:32px 12px;
+    color:var(--text-dim);
+    font-size:.9rem;
+  }
+
+  /* Perfil */
+  .profile-header{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:24px;
+  }
+  .avatar{
+    width:64px;height:64px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--info));
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.5rem;font-weight:800;color:#0E1420;
+    flex-shrink:0;
+  }
+
+  /* ===========================================================
+     RESPONSIVE
+     =========================================================== */
+  @media (max-width:900px){
+    .sidebar{transform:translateX(-100%);}
+    .sidebar.open{transform:translateX(0);}
+    .main{margin-left:0;}
+    .menu-toggle{display:flex;}
+    .topbar{padding:18px 20px 18px 68px;}
+    .content{padding:20px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Botón de menú móvil -->
+<button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+
+<!-- =================================================================
+     SIDEBAR / MENÚ LATERAL
+     ================================================================= -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-mark">JT</div>
+    JobTracker
+  </div>
+  <nav class="nav-menu" id="navMenu">
+    <button class="nav-link active" data-page="dashboard">
+      <span class="icon">📊</span> Dashboard
+    </button>
+    <button class="nav-link" data-page="vacantes">
+      <span class="icon">💼</span> Vacantes
+    </button>
+    <button class="nav-link" data-page="seguimientos">
+      <span class="icon">🗒️</span> Seguimientos
+    </button>
+    <button class="nav-link" data-page="usuarios">
+      <span class="icon">👥</span> Usuarios
+    </button>
+    <button class="nav-link" data-page="perfil">
+      <span class="icon">👤</span> Perfil
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    JobTracker v1.0<br>Panel de búsqueda de empleo
+  </div>
+</aside>
+
+<!-- =================================================================
+     CONTENIDO PRINCIPAL
+     ================================================================= -->
+<div class="main">
+  <header class="topbar">
+    <div>
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="subtitle" id="pageSubtitle">Resumen general de tu proceso de búsqueda</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ============ PÁGINA: DASHBOARD ============ -->
+    <section class="page active" id="page-dashboard">
+      <div class="grid-stats" id="statsGrid"><!-- Tarjetas generadas por JS --></div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Últimas vacantes</h3>
+        </div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr><th>Empresa</th><th>Cargo</th><th>Ciudad</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="dashboardVacantesBody"><!-- Generado por JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PÁGINA: VACANTES ============ -->
+    <section class="page" id="page-vacantes">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Nueva vacante</h3>
+        </div>
+        <div class="panel-body">
+          <form id="formVacante">
+            <input type="hidden" id="vacanteId">
+            <div class="form-grid">
+              <div>
+                <label for="vacanteEmpresa">Empresa</label>
+                <input type="text" id="vacanteEmpresa" required placeholder="Ej: Acme Corp">
+              </div>
+              <div>
+                <label for="vacanteCargo">Cargo</label>
+                <input type="text" id="vacanteCargo" required placeholder="Ej: Desarrollador Frontend">
+              </div>
+              <div>
+                <label for="vacanteSalario">Salario</label>
+                <input type="number" id="vacanteSalario" min="0" placeholder="Ej: 4500000">
+              </div>
+              <div>
+                <label for="vacanteCiudad">Ciudad</label>
+                <input type="text" id="vacanteCiudad" required placeholder="Ej: Bogotá">
+              </div>
+              <div>
+                <label for="vacanteEstado">Estado</label>
+                <select id="vacanteEstado">
+                  <option value="Aplicada">Aplicada</option>
+                  <option value="En revisión">En revisión</option>
+                  <option value="Entrevista">Entrevista</option>
+                  <option value="Oferta">Oferta</option>
+                  <option value="Rechazada">Rechazada</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnVacanteSubmit">+ Crear vacante</button>
+            <button type="button" class="btn btn-ghost" id="btnVacanteCancel" style="display:none;">Cancelar edición</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Vacantes registradas</h3>
+        </div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Empresa</th><th>Cargo</th><th>Salario</th><th>Ciudad</th><th>Estado</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="vacantesBody"><!-- Generado por JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PÁGINA: SEGUIMIENTOS ============ -->
+    <section class="page" id="page-seguimientos">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Registrar seguimiento</h3>
+        </div>
+        <div class="panel-body">
+          <form id="formSeguimiento">
+            <div class="form-grid">
+              <div>
+                <label for="seguimientoVacante">Vacante</label>
+                <select id="seguimientoVacante" required></select>
+              </div>
+              <div>
+                <label for="seguimientoFecha">Fecha</label>
+                <input type="date" id="seguimientoFecha" required>
+              </div>
+              <div>
+                <label for="seguimientoTipo">Tipo de seguimiento</label>
+                <select id="seguimientoTipo">
+                  <option>Llamada</option>
+                  <option>Correo</option>
+                  <option>Entrevista</option>
+                  <option>Mensaje</option>
+                  <option>Otro</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-bottom:14px;">
+              <label for="seguimientoDescripcion">Descripción</label>
+              <textarea id="seguimientoDescripcion" placeholder="Detalles del seguimiento..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">+ Registrar seguimiento</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Historial de seguimientos</h3>
+        </div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr><th>Fecha</th><th>Vacante</th><th>Tipo</th><th>Descripción</th></tr>
+            </thead>
+            <tbody id="seguimientosBody"><!-- Generado por JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PÁGINA: USUARIOS ============ -->
+    <section class="page" id="page-usuarios">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Nuevo usuario</h3>
+        </div>
+        <div class="panel-body">
+          <form id="formUsuario">
+            <input type="hidden" id="usuarioId">
+            <div class="form-grid">
+              <div>
+                <label for="usuarioNombre">Nombre</label>
+                <input type="text" id="usuarioNombre" required placeholder="Ej: Laura Gómez">
+              </div>
+              <div>
+                <label for="usuarioCorreo">Correo</label>
+                <input type="email" id="usuarioCorreo" required placeholder="Ej: laura@correo.com">
+              </div>
+              <div>
+                <label for="usuarioRol">Rol</label>
+                <select id="usuarioRol">
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="RECRUITER">RECRUITER</option>
+                  <option value="USER">USER</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnUsuarioSubmit">+ Crear usuario</button>
+            <button type="button" class="btn btn-ghost" id="btnUsuarioCancel" style="display:none;">Cancelar edición</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Usuarios del sistema</h3>
+        </div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="usuariosBody"><!-- Generado por JS --></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PÁGINA: PERFIL ============ -->
+    <section class="page" id="page-perfil">
+      <div class="panel">
+        <div class="panel-body">
+          <div class="profile-header">
+            <div class="avatar" id="profileAvatar">U</div>
+            <div>
+              <h3 id="profileName" style="margin-bottom:4px;">—</h3>
+              <span class="badge" id="profileRoleBadge">—</span>
+            </div>
+          </div>
+
+          <form id="formPerfil">
+            <div class="form-grid">
+              <div>
+                <label for="perfilNombre">Nombre</label>
+                <input type="text" id="perfilNombre" required>
+              </div>
+              <div>
+                <label for="perfilCorreo">Correo</label>
+                <input type="email" id="perfilCorreo" required>
+              </div>
+              <div>
+                <label for="perfilRol">Rol</label>
+                <input type="text" id="perfilRol" disabled>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- =================================================================
+     MODAL DE CONFIRMACIÓN (eliminar registros)
+     ================================================================= -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <h3>Confirmar eliminación</h3>
+    <p id="confirmMessage">¿Seguro que deseas eliminar este registro?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="confirmCancel">Cancelar</button>
+      <button class="btn btn-danger" id="confirmAccept">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   ESTADO DE LA APLICACIÓN
+   ---------------------------------------------------------------------
+   Contiene los datos en memoria que simulan la información que vendría
+   de un backend. Se inicializan vía la capa "api" en INICIALIZACIÓN.
+   ===================================================================== */
+const state = {
+  vacantes: [],
+  usuarios: [],
+  seguimientos: [],
+  perfil: null,
+  // referencia al registro que se desea eliminar (usado por el modal)
+  pendingDelete: null // { type: 'vacante' | 'usuario', id: number }
+};
+
+// Contadores autoincrementales simulados (simulan IDs de BD)
+let nextVacanteId = 1;
+let nextUsuarioId = 1;
+let nextSeguimientoId = 1;
+
+
+/* =====================================================================
+   API
+   ---------------------------------------------------------------------
+   Capa de acceso a datos. Actualmente trabaja sobre arreglos locales
+   (state) y simula latencia con Promesas, para que el resto del código
+   ya esté preparado para usar `fetch`.
+
+   Para conectar con un backend real, basta reemplazar el cuerpo de
+   cada función por una llamada fetch, por ejemplo:
+
+     getVacantes() {
+       return fetch('/api/vacantes').then(res => res.json());
+     }
+
+     createVacante(data) {
+       return fetch('/api/vacantes', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(data)
+       }).then(res => res.json());
+     }
+
+   La firma (parámetros y valor de retorno como Promise) ya es
+   compatible con fetch, por lo que el resto de la app no necesita
+   cambios.
+   ===================================================================== */
+const api = {
+
+  // ---------- VACANTES ----------
+  getVacantes() {
+    return Promise.resolve([...state.vacantes]);
+  },
+  createVacante(data) {
+    const nueva = { id: nextVacanteId++, ...data };
+    state.vacantes.push(nueva);
+    return Promise.resolve(nueva);
+  },
+  updateVacante(id, data) {
+    const idx = state.vacantes.findIndex(v => v.id === id);
+    if (idx !== -1) {
+      state.vacantes[idx] = { ...state.vacantes[idx], ...data };
+      return Promise.resolve(state.vacantes[idx]);
+    }
+    return Promise.reject(new Error('Vacante no encontrada'));
+  },
+  deleteVacante(id) {
+    state.vacantes = state.vacantes.filter(v => v.id !== id);
+    return Promise.resolve({ success: true });
+  },
+
+  // ---------- USUARIOS ----------
+  getUsuarios() {
+    return Promise.resolve([...state.usuarios]);
+  },
+  createUsuario(data) {
+    const nuevo = { id: nextUsuarioId++, ...data };
+    state.usuarios.push(nuevo);
+    return Promise.resolve(nuevo);
+  },
+  updateUsuario(id, data) {
+    const idx = state.usuarios.findIndex(u => u.id === id);
+    if (idx !== -1) {
+      state.usuarios[idx] = { ...state.usuarios[idx], ...data };
+      return Promise.resolve(state.usuarios[idx]);
+    }
+    return Promise.reject(new Error('Usuario no encontrado'));
+  },
+  deleteUsuario(id) {
+    state.usuarios = state.usuarios.filter(u => u.id !== id);
+    return Promise.resolve({ success: true });
+  },
+
+  // ---------- SEGUIMIENTOS ----------
+  getSeguimientos() {
+    return Promise.resolve([...state.seguimientos]);
+  },
+  createSeguimiento(data) {
+    const nuevo = { id: nextSeguimientoId++, ...data };
+    state.seguimientos.push(nuevo);
+    return Promise.resolve(nuevo);
+  },
+
+  // ---------- PERFIL ----------
+  getPerfil() {
+    return Promise.resolve({ ...state.perfil });
+  },
+  updatePerfil(data) {
+    state.perfil = { ...state.perfil, ...data };
+    return Promise.resolve({ ...state.perfil });
+  }
+};
+
+
+/* =====================================================================
+   RENDERIZADO
+   ---------------------------------------------------------------------
+   Funciones encargadas de pintar datos del estado en el DOM.
+   ===================================================================== */
+
+// --- Helpers de formato ---
+function formatCurrency(value) {
+  if (value === null || value === undefined || value === '') return '—';
+  return '$' + Number(value).toLocaleString('es-CO');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const [y, m, d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// --- Badges de estado de vacante ---
+function badgeEstadoVacante(estado) {
+  const map = {
+    'Aplicada': 'badge-aplicada',
+    'En revisión': 'badge-revision',
+    'Entrevista': 'badge-entrevista',
+    'Oferta': 'badge-oferta',
+    'Rechazada': 'badge-rechazada'
+  };
+  const cls = map[estado] || 'badge-aplicada';
+  return `<span class="badge ${cls}">${estado}</span>`;
+}
+
+// --- Badges de rol de usuario ---
+function badgeRolUsuario(rol) {
+  const map = {
+    'ADMIN': 'badge-admin',
+    'RECRUITER': 'badge-recruiter',
+    'USER': 'badge-user'
+  };
+  const cls = map[rol] || 'badge-user';
+  return `<span class="badge ${cls}">${rol}</span>`;
+}
+
+// --- DASHBOARD ---
+function renderDashboard() {
+  const vacantes = state.vacantes;
+
+  const total = vacantes.length;
+  const aplicaciones = vacantes.filter(v => v.estado !== 'Aplicada' || true).length; // todas las registradas son aplicaciones enviadas
+  const entrevistas = vacantes.filter(v => v.estado === 'Entrevista').length;
+  const ofertas = vacantes.filter(v => v.estado === 'Oferta').length;
+  const rechazos = vacantes.filter(v => v.estado === 'Rechazada').length;
+
+  const stats = [
+    { label: 'Vacantes Totales', value: total, color: 'var(--accent)' },
+    { label: 'Aplicaciones Enviadas', value: aplicaciones, color: 'var(--info)' },
+    { label: 'Entrevistas', value: entrevistas, color: 'var(--warning)' },
+    { label: 'Ofertas', value: ofertas, color: 'var(--success)' },
+    { label: 'Rechazos', value: rechazos, color: 'var(--danger)' }
+  ];
+
+  const grid = document.getElementById('statsGrid');
+  grid.innerHTML = stats.map(s => {
+    const pct = total > 0 ? Math.round((s.value / total) * 100) : 0;
+    return `
+      <div class="stat-card">
+        <div class="stat-label">${s.label}</div>
+        <div class="stat-value">${s.value}</div>
+        <div class="stat-bar"><span style="width:${pct}%; background:${s.color};"></span></div>
+      </div>
+    `;
+  }).join('');
+
+  // Tabla de últimas vacantes (las 5 más recientes)
+  const tbody = document.getElementById('dashboardVacantesBody');
+  const recientes = [...vacantes].slice(-5).reverse();
+
+  if (recientes.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">Aún no has registrado vacantes. Ve a la sección "Vacantes" para empezar.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = recientes.map(v => `
+    <tr>
+      <td>${v.empresa}</td>
+      <td>${v.cargo}</td>
+      <td>${v.ciudad}</td>
+      <td>${badgeEstadoVacante(v.estado)}</td>
+    </tr>
+  `).join('');
+}
+
+// --- VACANTES ---
+function renderVacantes() {
+  const tbody = document.getElementById('vacantesBody');
+
+  if (state.vacantes.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">No hay vacantes registradas todavía. Usa el formulario para crear la primera.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = state.vacantes.map(v => `
+    <tr>
+      <td>${v.empresa}</td>
+      <td>${v.cargo}</td>
+      <td>${formatCurrency(v.salario)}</td>
+      <td>${v.ciudad}</td>
+      <td>${badgeEstadoVacante(v.estado)}</td>
+      <td class="actions">
+        <button class="btn btn-sm btn-ghost" data-action="edit-vacante" data-id="${v.id}">Editar</button>
+        <button class="btn btn-sm btn-danger" data-action="delete-vacante" data-id="${v.id}">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// --- SEGUIMIENTOS ---
+function renderSeguimientoSelect() {
+  const select = document.getElementById('seguimientoVacante');
+  if (state.vacantes.length === 0) {
+    select.innerHTML = `<option value="">No hay vacantes disponibles</option>`;
+    return;
+  }
+  select.innerHTML = state.vacantes
+    .map(v => `<option value="${v.id}">${v.empresa} — ${v.cargo}</option>`)
+    .join('');
+}
+
+function renderSeguimientos() {
+  const tbody = document.getElementById('seguimientosBody');
+
+  if (state.seguimientos.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">No hay seguimientos registrados aún.</div></td></tr>`;
+    return;
+  }
+
+  // Ordenar por fecha descendente
+  const ordenados = [...state.seguimientos].sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
+
+  tbody.innerHTML = ordenados.map(s => {
+    const vacante = state.vacantes.find(v => v.id === s.vacanteId);
+    const nombreVacante = vacante ? `${vacante.empresa} — ${vacante.cargo}` : 'Vacante eliminada';
+    return `
+      <tr>
+        <td>${formatDate(s.fecha)}</td>
+        <td>${nombreVacante}</td>
+        <td>${s.tipo}</td>
+        <td>${s.descripcion || '—'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// --- USUARIOS ---
+function renderUsuarios() {
+  const tbody = document.getElementById('usuariosBody');
+
+  if (state.usuarios.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">No hay usuarios registrados.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = state.usuarios.map(u => `
+    <tr>
+      <td>${u.nombre}</td>
+      <td>${u.correo}</td>
+      <td>${badgeRolUsuario(u.rol)}</td>
+      <td class="actions">
+        <button class="btn btn-sm btn-ghost" data-action="edit-usuario" data-id="${u.id}">Editar</button>
+        <button class="btn btn-sm btn-danger" data-action="delete-usuario" data-id="${u.id}">Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// --- PERFIL ---
+function renderPerfil() {
+  const p = state.perfil;
+  if (!p) return;
+
+  document.getElementById('profileName').textContent = p.nombre;
+  document.getElementById('profileAvatar').textContent = p.nombre.charAt(0).toUpperCase();
+  document.getElementById('profileRoleBadge').outerHTML = badgeRolUsuario(p.rol).replace('<span', '<span id="profileRoleBadge"');
+
+  document.getElementById('perfilNombre').value = p.nombre;
+  document.getElementById('perfilCorreo').value = p.correo;
+  document.getElementById('perfilRol').value = p.rol;
+}
+
+// Renderiza todo lo que depende de los datos actuales
+function renderAll() {
+  renderDashboard();
+  renderVacantes();
+  renderSeguimientoSelect();
+  renderSeguimientos();
+  renderUsuarios();
+  renderPerfil();
+}
+
+
+/* =====================================================================
+   EVENTOS
+   ---------------------------------------------------------------------
+   Manejo de navegación, formularios y acciones de tabla.
+   ===================================================================== */
+
+// --- Navegación entre páginas ---
+const pageMeta = {
+  dashboard: { title: 'Dashboard', subtitle: 'Resumen general de tu proceso de búsqueda' },
+  vacantes: { title: 'Vacantes', subtitle: 'Gestiona las vacantes a las que aplicas' },
+  seguimientos: { title: 'Seguimientos', subtitle: 'Registra el historial de actividad por vacante' },
+  usuarios: { title: 'Usuarios', subtitle: 'Administra los usuarios del sistema' },
+  perfil: { title: 'Perfil', subtitle: 'Actualiza tu información personal' }
+};
+
+function navigateTo(pageId) {
+  // Botones del menú
+  document.querySelectorAll('.nav-link').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === pageId);
+  });
+
+  // Secciones
+  document.querySelectorAll('.page').forEach(section => {
+    section.classList.toggle('active', section.id === `page-${pageId}`);
+  });
+
+  // Encabezado
+  const meta = pageMeta[pageId];
+  document.getElementById('pageTitle').textContent = meta.title;
+  document.getElementById('pageSubtitle').textContent = meta.subtitle;
+
+  // Cerrar menú móvil al navegar
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+document.getElementById('navMenu').addEventListener('click', (e) => {
+  const btn = e.target.closest('.nav-link');
+  if (!btn) return;
+  navigateTo(btn.dataset.page);
+});
+
+// --- Menú móvil ---
+document.getElementById('menuToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+
+// --- Formulario de VACANTES (crear / editar) ---
+const formVacante = document.getElementById('formVacante');
+const btnVacanteCancel = document.getElementById('btnVacanteCancel');
+const btnVacanteSubmit = document.getElementById('btnVacanteSubmit');
+
+formVacante.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById('vacanteId').value;
+  const data = {
+    empresa: document.getElementById('vacanteEmpresa').value.trim(),
+    cargo: document.getElementById('vacanteCargo').value.trim(),
+    salario: document.getElementById('vacanteSalario').value,
+    ciudad: document.getElementById('vacanteCiudad').value.trim(),
+    estado: document.getElementById('vacanteEstado').value
+  };
+
+  const action = id
+    ? api.updateVacante(Number(id), data)
+    : api.createVacante(data);
+
+  action.then(() => {
+    formVacante.reset();
+    document.getElementById('vacanteId').value = '';
+    btnVacanteSubmit.textContent = '+ Crear vacante';
+    btnVacanteCancel.style.display = 'none';
+    renderAll();
+  });
+});
+
+btnVacanteCancel.addEventListener('click', () => {
+  formVacante.reset();
+  document.getElementById('vacanteId').value = '';
+  btnVacanteSubmit.textContent = '+ Crear vacante';
+  btnVacanteCancel.style.display = 'none';
+});
+
+// Acciones de tabla de vacantes (editar / eliminar)
+document.getElementById('vacantesBody').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = Number(btn.dataset.id);
+
+  if (btn.dataset.action === 'edit-vacante') {
+    const v = state.vacantes.find(x => x.id === id);
+    if (!v) return;
+    document.getElementById('vacanteId').value = v.id;
+    document.getElementById('vacanteEmpresa').value = v.empresa;
+    document.getElementById('vacanteCargo').value = v.cargo;
+    document.getElementById('vacanteSalario').value = v.salario || '';
+    document.getElementById('vacanteCiudad').value = v.ciudad;
+    document.getElementById('vacanteEstado').value = v.estado;
+    btnVacanteSubmit.textContent = 'Guardar cambios';
+    btnVacanteCancel.style.display = 'inline-flex';
+    navigateTo('vacantes');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (btn.dataset.action === 'delete-vacante') {
+    state.pendingDelete = { type: 'vacante', id };
+    openConfirmModal('¿Seguro que deseas eliminar esta vacante? Esta acción también afectará sus seguimientos asociados.');
+  }
+});
+
+// --- Formulario de SEGUIMIENTOS ---
+const formSeguimiento = document.getElementById('formSeguimiento');
+
+formSeguimiento.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const vacanteId = Number(document.getElementById('seguimientoVacante').value);
+  if (!vacanteId) return;
+
+  const data = {
+    vacanteId,
+    fecha: document.getElementById('seguimientoFecha').value,
+    tipo: document.getElementById('seguimientoTipo').value,
+    descripcion: document.getElementById('seguimientoDescripcion').value.trim()
+  };
+
+  api.createSeguimiento(data).then(() => {
+    formSeguimiento.reset();
+    renderAll();
+  });
+});
+
+// --- Formulario de USUARIOS (crear / editar) ---
+const formUsuario = document.getElementById('formUsuario');
+const btnUsuarioCancel = document.getElementById('btnUsuarioCancel');
+const btnUsuarioSubmit = document.getElementById('btnUsuarioSubmit');
+
+formUsuario.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById('usuarioId').value;
+  const data = {
+    nombre: document.getElementById('usuarioNombre').value.trim(),
+    correo: document.getElementById('usuarioCorreo').value.trim(),
+    rol: document.getElementById('usuarioRol').value
+  };
+
+  const action = id
+    ? api.updateUsuario(Number(id), data)
+    : api.createUsuario(data);
+
+  action.then(() => {
+    formUsuario.reset();
+    document.getElementById('usuarioId').value = '';
+    btnUsuarioSubmit.textContent = '+ Crear usuario';
+    btnUsuarioCancel.style.display = 'none';
+    renderAll();
+  });
+});
+
+btnUsuarioCancel.addEventListener('click', () => {
+  formUsuario.reset();
+  document.getElementById('usuarioId').value = '';
+  btnUsuarioSubmit.textContent = '+ Crear usuario';
+  btnUsuarioCancel.style.display = 'none';
+});
+
+// Acciones de tabla de usuarios (editar / eliminar)
+document.getElementById('usuariosBody').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-action]');
+  if (!btn) return;
+  const id = Number(btn.dataset.id);
+
+  if (btn.dataset.action === 'edit-usuario') {
+    const u = state.usuarios.find(x => x.id === id);
+    if (!u) return;
+    document.getElementById('usuarioId').value = u.id;
+    document.getElementById('usuarioNombre').value = u.nombre;
+    document.getElementById('usuarioCorreo').value = u.correo;
+    document.getElementById('usuarioRol').value = u.rol;
+    btnUsuarioSubmit.textContent = 'Guardar cambios';
+    btnUsuarioCancel.style.display = 'inline-flex';
+    navigateTo('usuarios');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  if (btn.dataset.action === 'delete-usuario') {
+    state.pendingDelete = { type: 'usuario', id };
+    openConfirmModal('¿Seguro que deseas eliminar este usuario del sistema?');
+  }
+});
+
+// --- Formulario de PERFIL ---
+const formPerfil = document.getElementById('formPerfil');
+
+formPerfil.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const data = {
+    nombre: document.getElementById('perfilNombre').value.trim(),
+    correo: document.getElementById('perfilCorreo').value.trim()
+  };
+
+  api.updatePerfil(data).then(() => {
+    renderAll();
+  });
+});
+
+// --- Modal de confirmación de eliminación ---
+const confirmModal = document.getElementById('confirmModal');
+const confirmMessage = document.getElementById('confirmMessage');
+
+function openConfirmModal(message) {
+  confirmMessage.textContent = message;
+  confirmModal.classList.add('active');
+}
+
+function closeConfirmModal() {
+  confirmModal.classList.remove('active');
+  state.pendingDelete = null;
+}
+
+document.getElementById('confirmCancel').addEventListener('click', closeConfirmModal);
+
+document.getElementById('confirmAccept').addEventListener('click', () => {
+  const pending = state.pendingDelete;
+  if (!pending) return closeConfirmModal();
+
+  let action;
+  if (pending.type === 'vacante') {
+    // También eliminar seguimientos asociados a la vacante
+    state.seguimientos = state.seguimientos.filter(s => s.vacanteId !== pending.id);
+    action = api.deleteVacante(pending.id);
+  } else if (pending.type === 'usuario') {
+    action = api.deleteUsuario(pending.id);
+  }
+
+  action.then(() => {
+    closeConfirmModal();
+    renderAll();
+  });
+});
+
+// Cerrar modal al hacer click fuera del cuadro
+confirmModal.addEventListener('click', (e) => {
+  if (e.target === confirmModal) closeConfirmModal();
+});
+
+
+/* =====================================================================
+   INICIALIZACIÓN
+   ---------------------------------------------------------------------
+   Carga datos simulados iniciales (a futuro: peticiones reales al API)
+   y renderiza la aplicación por primera vez.
+   ===================================================================== */
+function seedData() {
+  // Vacantes de ejemplo
+  const vacantesSeed = [
+    { empresa: 'Nimbus Tech', cargo: 'Desarrollador Frontend', salario: 4500000, ciudad: 'Bogotá', estado: 'Entrevista' },
+    { empresa: 'DataForge', cargo: 'Analista de Datos', salario: 4000000, ciudad: 'Medellín', estado: 'En revisión' },
+    { empresa: 'CloudNine SAS', cargo: 'Ingeniero Backend', salario: 5200000, ciudad: 'Remoto', estado: 'Aplicada' },
+    { empresa: 'Vertex Software', cargo: 'Desarrollador Full Stack', salario: 4800000, ciudad: 'Cali', estado: 'Oferta' },
+    { empresa: 'PixelWorks', cargo: 'Diseñador UI/UX', salario: 3800000, ciudad: 'Bogotá', estado: 'Rechazada' }
+  ];
+
+  // Usuarios de ejemplo
+  const usuariosSeed = [
+    { nombre: 'Laura Gómez', correo: 'laura.gomez@jobtracker.com', rol: 'ADMIN' },
+    { nombre: 'Carlos Pérez', correo: 'carlos.perez@jobtracker.com', rol: 'RECRUITER' },
+    { nombre: 'Mariana Ríos', correo: 'mariana.rios@jobtracker.com', rol: 'USER' }
+  ];
+
+  const vacantePromises = vacantesSeed.map(v => api.createVacante(v));
+
+  return Promise.all(vacantePromises).then((vacantesCreadas) => {
+    // Seguimientos de ejemplo, ligados a las vacantes recién creadas
+    const seguimientosSeed = [
+      { vacanteId: vacantesCreadas[0].id, fecha: '2026-05-20', tipo: 'Correo', descripcion: 'Confirmación de recepción de la hoja de vida.' },
+      { vacanteId: vacantesCreadas[0].id, fecha: '2026-06-02', tipo: 'Entrevista', descripcion: 'Entrevista técnica con el equipo de ingeniería.' },
+      { vacanteId: vacantesCreadas[1].id, fecha: '2026-05-28', tipo: 'Llamada', descripcion: 'Llamada de reclutadora para validar disponibilidad.' },
+      { vacanteId: vacantesCreadas[3].id, fecha: '2026-06-05', tipo: 'Correo', descripcion: 'Recepción de carta de oferta laboral.' }
+    ];
+
+    const usuarioPromises = usuariosSeed.map(u => api.createUsuario(u));
+    const seguimientoPromises = seguimientosSeed.map(s => api.createSeguimiento(s));
+
+    return Promise.all([...usuarioPromises, ...seguimientoPromises]);
+  });
+}
+
+function init() {
+  // Establece la fecha de hoy como valor por defecto en el formulario de seguimientos
+  document.getElementById('seguimientoFecha').valueAsDate = new Date();
+
+  // Perfil simulado del usuario actual (a futuro vendría de /api/perfil)
+  state.perfil = { nombre: 'Mariana Ríos', correo: 'mariana.rios@jobtracker.com', rol: 'USER' };
+
+  seedData().then(() => {
+    renderAll();
+  });
+}
+
+init();
+</script>
+</body>
+</html>
