@@ -406,6 +406,154 @@
   }
 
   /* ===========================================================
+     AUTENTICACIÓN (pantalla de login / registro)
+     =========================================================== */
+  .auth-screen{
+    min-height:100vh;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(91,127,255,.18), transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(74,222,128,.10), transparent 45%),
+      var(--bg);
+  }
+  .auth-card{
+    width:100%;
+    max-width:420px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:32px;
+  }
+  .auth-brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:800;
+    font-size:1.25rem;
+    margin-bottom:6px;
+  }
+  .auth-subtitle{
+    color:var(--text-dim);
+    font-size:.88rem;
+    margin-bottom:24px;
+  }
+  .auth-tabs{
+    display:flex;
+    border:1px solid var(--border);
+    border-radius:8px;
+    overflow:hidden;
+    margin-bottom:22px;
+  }
+  .auth-tab{
+    flex:1;
+    text-align:center;
+    padding:10px;
+    font-weight:600;
+    font-size:.85rem;
+    cursor:pointer;
+    background:var(--surface-2);
+    color:var(--text-dim);
+    border:none;
+    font-family:'Sora',sans-serif;
+    transition:background .15s,color .15s;
+  }
+  .auth-tab.active{
+    background:var(--accent);
+    color:#fff;
+  }
+  .auth-form{display:none;}
+  .auth-form.active{display:block;}
+  .auth-form .btn-primary{width:100%;justify-content:center;margin-top:6px;}
+  .auth-error{
+    background:rgba(248,113,113,.12);
+    border:1px solid rgba(248,113,113,.35);
+    color:var(--danger);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:.82rem;
+    margin-bottom:14px;
+    display:none;
+  }
+  .auth-error.active{display:block;}
+  .auth-success{
+    background:rgba(74,222,128,.12);
+    border:1px solid rgba(74,222,128,.35);
+    color:var(--success);
+    border-radius:8px;
+    padding:10px 12px;
+    font-size:.82rem;
+    margin-bottom:14px;
+    display:none;
+  }
+  .auth-success.active{display:block;}
+  .auth-hint{
+    font-size:.78rem;
+    color:var(--text-dim);
+    margin-top:18px;
+    text-align:center;
+  }
+
+  /* ===========================================================
+     ACCESO DENEGADO / ESTADOS DE VERIFICACIÓN
+     =========================================================== */
+  .denied-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--text-dim);
+  }
+  .denied-state .denied-icon{font-size:2.4rem;margin-bottom:12px;}
+  .denied-state h3{color:var(--text);margin-bottom:6px;}
+
+  .badge-pendiente_verificacion{background:rgba(251,191,36,.15);color:var(--warning);}
+  .badge-verificado{background:rgba(74,222,128,.15);color:var(--success);}
+  .badge-PENDIENTE{background:rgba(251,191,36,.15);color:var(--warning);}
+  .badge-APROBADA{background:rgba(74,222,128,.15);color:var(--success);}
+  .badge-RECHAZADA{background:rgba(248,113,113,.15);color:var(--danger);}
+
+  /* Bloque de usuario / cerrar sesión en el pie del sidebar */
+  .sidebar-user{
+    padding:14px 22px;
+    border-top:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .sidebar-user .avatar-sm{
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg,var(--accent),var(--info));
+    display:flex;align-items:center;justify-content:center;
+    font-size:.85rem;font-weight:800;color:#0E1420;
+    flex-shrink:0;
+  }
+  .sidebar-user .user-info{flex:1;min-width:0;}
+  .sidebar-user .user-info .u-name{
+    font-size:.82rem;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .sidebar-user .user-info .u-role{
+    font-size:.72rem;color:var(--text-dim);
+  }
+  .sidebar-user .logout-btn{
+    background:none;border:none;color:var(--text-dim);
+    cursor:pointer;font-size:1.1rem;padding:4px;
+    flex-shrink:0;
+    transition:color .15s;
+  }
+  .sidebar-user .logout-btn:hover{color:var(--danger);}
+
+  /* Estado de verificación dentro de Perfil */
+  .profile-meta{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:8px;
+  }
+
+  /* ===========================================================
      RESPONSIVE
      =========================================================== */
   @media (max-width:900px){
@@ -416,12 +564,92 @@
     .topbar{padding:18px 20px 18px 68px;}
     .content{padding:20px;}
   }
+  @media (max-width:480px){
+    .auth-card{padding:24px;}
+  }
 </style>
 </head>
 <body>
 
+<!-- =================================================================
+     PANTALLA DE AUTENTICACIÓN (Login / Registro)
+     -----------------------------------------------------------------
+     Visible cuando no hay sesión activa. Al autenticar correctamente,
+     se oculta esta pantalla y se muestra #appRoot.
+     Backend futuro:
+       POST /api/auth/login
+       POST /api/auth/register
+     ================================================================= -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <div class="brand-mark">JT</div>
+      JobTracker
+    </div>
+    <div class="auth-subtitle">Gestiona tu búsqueda de empleo de forma profesional</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" data-tab="login">Iniciar sesión</button>
+      <button class="auth-tab" data-tab="register">Registrarse</button>
+    </div>
+
+    <!-- ---- Formulario de LOGIN ---- -->
+    <form class="auth-form active" id="formLogin">
+      <div class="auth-error" id="loginError"></div>
+      <div class="auth-success" id="loginSuccess"></div>
+      <div style="margin-bottom:14px;">
+        <label for="loginCorreo">Correo</label>
+        <input type="email" id="loginCorreo" required placeholder="tucorreo@ejemplo.com">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="loginPassword">Contraseña</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+      <div class="auth-hint">¿No tienes cuenta? Usa la pestaña "Registrarse".</div>
+    </form>
+
+    <!-- ---- Formulario de REGISTRO ---- -->
+    <form class="auth-form" id="formRegister">
+      <div class="auth-error" id="registerError"></div>
+      <div class="form-grid">
+        <div>
+          <label for="registerNombre">Nombre</label>
+          <input type="text" id="registerNombre" required placeholder="Ej: Mariana">
+        </div>
+        <div>
+          <label for="registerApellidos">Apellidos</label>
+          <input type="text" id="registerApellidos" required placeholder="Ej: Ríos">
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="registerCorreo">Correo</label>
+        <input type="email" id="registerCorreo" required placeholder="tucorreo@ejemplo.com">
+      </div>
+      <div class="form-grid">
+        <div>
+          <label for="registerPassword">Contraseña</label>
+          <input type="password" id="registerPassword" required placeholder="••••••••">
+        </div>
+        <div>
+          <label for="registerPasswordConfirm">Confirmar contraseña</label>
+          <input type="password" id="registerPasswordConfirm" required placeholder="••••••••">
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Crear cuenta</button>
+      <div class="auth-hint">Todas las cuentas nuevas se crean con rol USER.</div>
+    </form>
+  </div>
+</div>
+
+<!-- =================================================================
+     CONTENEDOR PRINCIPAL DE LA APLICACIÓN (oculto hasta iniciar sesión)
+     ================================================================= -->
+<div id="appRoot" style="display:none;">
+
 <!-- Botón de menú móvil -->
 <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">☰</button>
+
 
 <!-- =================================================================
      SIDEBAR / MENÚ LATERAL
@@ -441,13 +669,21 @@
     <button class="nav-link" data-page="seguimientos">
       <span class="icon">🗒️</span> Seguimientos
     </button>
-    <button class="nav-link" data-page="usuarios">
+    <button class="nav-link" data-page="usuarios" data-role="ADMIN" id="navUsuarios" style="display:none;">
       <span class="icon">👥</span> Usuarios
     </button>
     <button class="nav-link" data-page="perfil">
       <span class="icon">👤</span> Perfil
     </button>
   </nav>
+  <div class="sidebar-user" id="sidebarUser">
+    <div class="avatar-sm" id="sidebarAvatar">U</div>
+    <div class="user-info">
+      <div class="u-name" id="sidebarUserName">—</div>
+      <div class="u-role" id="sidebarUserRole">—</div>
+    </div>
+    <button class="logout-btn" id="btnLogout" title="Cerrar sesión">⎋</button>
+  </div>
   <div class="sidebar-footer">
     JobTracker v1.0<br>Panel de búsqueda de empleo
   </div>
@@ -597,8 +833,23 @@
       </div>
     </section>
 
-    <!-- ============ PÁGINA: USUARIOS ============ -->
+    <!-- ============ PÁGINA: USUARIOS (solo ADMIN) ============ -->
     <section class="page" id="page-usuarios">
+      <!-- Vista de acceso denegado para usuarios USER -->
+      <div id="usuariosDenied" style="display:none;">
+        <div class="panel">
+          <div class="panel-body">
+            <div class="denied-state">
+              <div class="denied-icon">🔒</div>
+              <h3>Acceso denegado</h3>
+              <p>No tienes permisos para ver esta sección. Esta área está reservada para administradores.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contenido real, solo visible para ADMIN -->
+      <div id="usuariosContent">
       <div class="panel">
         <div class="panel-header">
           <h3 class="section-title" style="margin:0;">Nuevo usuario</h3>
@@ -618,9 +869,8 @@
               <div>
                 <label for="usuarioRol">Rol</label>
                 <select id="usuarioRol">
-                  <option value="ADMIN">ADMIN</option>
-                  <option value="RECRUITER">RECRUITER</option>
                   <option value="USER">USER</option>
+                  <option value="ADMIN">ADMIN</option>
                 </select>
               </div>
             </div>
@@ -637,12 +887,28 @@
         <div class="panel-body table-wrap">
           <table>
             <thead>
-              <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Acciones</th></tr>
+              <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Verificación</th><th>Acciones</th></tr>
             </thead>
             <tbody id="usuariosBody"><!-- Generado por JS --></tbody>
           </table>
         </div>
       </div>
+
+      <!-- Solicitudes de rol Administrador (visibles para ADMIN) -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Solicitudes de rol Administrador</h3>
+        </div>
+        <div class="panel-body table-wrap">
+          <table>
+            <thead>
+              <tr><th>Usuario</th><th>Correo</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="adminRequestsBody"><!-- Generado por JS --></tbody>
+          </table>
+        </div>
+      </div>
+      </div><!-- /usuariosContent -->
     </section>
 
     <!-- ============ PÁGINA: PERFIL ============ -->
@@ -653,7 +919,10 @@
             <div class="avatar" id="profileAvatar">U</div>
             <div>
               <h3 id="profileName" style="margin-bottom:4px;">—</h3>
-              <span class="badge" id="profileRoleBadge">—</span>
+              <div class="profile-meta">
+                <span class="badge" id="profileRoleBadge">—</span>
+                <span class="badge" id="profileVerificationBadge">—</span>
+              </div>
             </div>
           </div>
 
@@ -664,8 +933,28 @@
                 <input type="text" id="perfilNombre" required>
               </div>
               <div>
+                <label for="perfilApellidos">Apellidos</label>
+                <input type="text" id="perfilApellidos" required>
+              </div>
+              <div>
                 <label for="perfilCorreo">Correo</label>
                 <input type="email" id="perfilCorreo" required>
+              </div>
+              <div>
+                <label for="perfilTelefono">Teléfono</label>
+                <input type="tel" id="perfilTelefono" placeholder="Ej: +57 300 123 4567">
+              </div>
+              <div>
+                <label for="perfilCiudad">Ciudad</label>
+                <input type="text" id="perfilCiudad" placeholder="Ej: Bogotá">
+              </div>
+              <div>
+                <label for="perfilLinkedin">LinkedIn</label>
+                <input type="url" id="perfilLinkedin" placeholder="https://linkedin.com/in/usuario">
+              </div>
+              <div>
+                <label for="perfilGithub">GitHub</label>
+                <input type="url" id="perfilGithub" placeholder="https://github.com/usuario">
               </div>
               <div>
                 <label for="perfilRol">Rol</label>
@@ -676,10 +965,27 @@
           </form>
         </div>
       </div>
+
+      <!-- Solicitud de rol Administrador -->
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="section-title" style="margin:0;">Rol de Administrador</h3>
+        </div>
+        <div class="panel-body">
+          <p style="color:var(--text-dim); font-size:.88rem; margin-bottom:14px;">
+            Si necesitas permisos de administrador para gestionar usuarios y solicitudes,
+            puedes enviar una solicitud. Un administrador la revisará y la aprobará o rechazará.
+          </p>
+          <div id="adminRequestStatus" style="margin-bottom:14px;"></div>
+          <button type="button" class="btn btn-primary" id="btnSolicitarAdmin">Solicitar rol Administrador</button>
+        </div>
+      </div>
     </section>
 
   </div>
 </div>
+
+</div><!-- /appRoot -->
 
 <!-- =================================================================
      MODAL DE CONFIRMACIÓN (eliminar registros)
@@ -697,16 +1003,25 @@
 
 <script>
 /* =====================================================================
-   ESTADO DE LA APLICACIÓN
+   ESTADO GLOBAL
    ---------------------------------------------------------------------
-   Contiene los datos en memoria que simulan la información que vendría
-   de un backend. Se inicializan vía la capa "api" en INICIALIZACIÓN.
+   Estado en memoria de la aplicación: sesión actual, datos cargados
+   y referencias auxiliares (modal, edición en curso, etc).
+   En el futuro, "currentUser" y "token" vendrán de la respuesta de
+   POST /api/auth/login y se guardarían en localStorage / cookies.
    ===================================================================== */
 const state = {
+  // Sesión actual (null = no autenticado)
+  currentUser: null,
+  // Token JWT simulado (a futuro vendría del backend)
+  authToken: null,
+
+  // Colecciones de datos
   vacantes: [],
   usuarios: [],
   seguimientos: [],
-  perfil: null,
+  adminRequests: [],
+
   // referencia al registro que se desea eliminar (usado por el modal)
   pendingDelete: null // { type: 'vacante' | 'usuario', id: number }
 };
@@ -715,35 +1030,136 @@ const state = {
 let nextVacanteId = 1;
 let nextUsuarioId = 1;
 let nextSeguimientoId = 1;
+let nextAdminRequestId = 1;
+
+
+/* =====================================================================
+   DATOS SIMULADOS
+   ---------------------------------------------------------------------
+   "Base de datos" en memoria. En el futuro estos registros vivirán en
+   una base de datos real (por ejemplo MongoDB / PostgreSQL) gestionada
+   por el backend Node.js + Express.
+   ===================================================================== */
+
+// Usuarios registrados (incluye contraseña simulada en texto plano
+// SOLO para esta demo local; en el backend real se debe usar hashing
+// con bcrypt y nunca exponer la contraseña al frontend).
+const usuariosSeed = [
+  {
+    nombre: 'Laura',
+    apellidos: 'Gómez',
+    correo: 'laura.gomez@jobtracker.com',
+    password: 'admin123',
+    rol: 'ADMIN',
+    estadoVerificacion: 'verificado',
+    telefono: '',
+    ciudad: '',
+    linkedin: '',
+    github: ''
+  },
+  {
+    nombre: 'Mariana',
+    apellidos: 'Ríos',
+    correo: 'mariana.rios@jobtracker.com',
+    password: 'user123',
+    rol: 'USER',
+    estadoVerificacion: 'verificado',
+    telefono: '+57 300 123 4567',
+    ciudad: 'Bogotá',
+    linkedin: 'https://linkedin.com/in/marianarios',
+    github: 'https://github.com/marianarios'
+  }
+];
+
+// Vacantes de ejemplo
+const vacantesSeed = [
+  { empresa: 'Nimbus Tech', cargo: 'Desarrollador Frontend', salario: 4500000, ciudad: 'Bogotá', estado: 'Entrevista' },
+  { empresa: 'DataForge', cargo: 'Analista de Datos', salario: 4000000, ciudad: 'Medellín', estado: 'En revisión' },
+  { empresa: 'CloudNine SAS', cargo: 'Ingeniero Backend', salario: 5200000, ciudad: 'Remoto', estado: 'Aplicada' },
+  { empresa: 'Vertex Software', cargo: 'Desarrollador Full Stack', salario: 4800000, ciudad: 'Cali', estado: 'Oferta' },
+  { empresa: 'PixelWorks', cargo: 'Diseñador UI/UX', salario: 3800000, ciudad: 'Bogotá', estado: 'Rechazada' }
+];
 
 
 /* =====================================================================
    API
    ---------------------------------------------------------------------
    Capa de acceso a datos. Actualmente trabaja sobre arreglos locales
-   (state) y simula latencia con Promesas, para que el resto del código
-   ya esté preparado para usar `fetch`.
+   (state) y devuelve Promesas, para que el resto del código ya esté
+   preparado para usar `fetch`.
 
-   Para conectar con un backend real, basta reemplazar el cuerpo de
-   cada función por una llamada fetch, por ejemplo:
+   Para conectar con el backend Node.js + Express + JWT, basta
+   reemplazar el cuerpo de cada función por una llamada fetch que
+   incluya el token de autenticación, por ejemplo:
 
      getVacantes() {
-       return fetch('/api/vacantes').then(res => res.json());
+       return fetch('/api/vacantes', {
+         headers: { 'Authorization': 'Bearer ' + state.authToken }
+       }).then(res => res.json());
      }
 
-     createVacante(data) {
-       return fetch('/api/vacantes', {
+     login(correo, password) {
+       return fetch('/api/auth/login', {
          method: 'POST',
          headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(data)
+         body: JSON.stringify({ correo, password })
        }).then(res => res.json());
+       // El backend devolvería { token, user }
      }
 
    La firma (parámetros y valor de retorno como Promise) ya es
    compatible con fetch, por lo que el resto de la app no necesita
-   cambios.
+   cambios estructurales.
    ===================================================================== */
 const api = {
+
+  // ---------- AUTENTICACIÓN ----------
+  // Futuro backend: POST /api/auth/login
+  login(correo, password) {
+    const user = state.usuarios.find(u =>
+      u.correo.toLowerCase() === correo.toLowerCase() && u.password === password
+    );
+    if (!user) {
+      return Promise.reject(new Error('Correo o contraseña incorrectos.'));
+    }
+    // Simula un token JWT (en el backend real sería firmado con una clave secreta)
+    const fakeToken = 'fake-jwt-token.' + user.id + '.' + Date.now();
+    return Promise.resolve({ token: fakeToken, user: { ...user } });
+  },
+
+  // Futuro backend: POST /api/auth/register
+  register(data) {
+    const existe = state.usuarios.find(u => u.correo.toLowerCase() === data.correo.toLowerCase());
+    if (existe) {
+      return Promise.reject(new Error('Ya existe una cuenta registrada con ese correo.'));
+    }
+    const nuevo = {
+      id: nextUsuarioId++,
+      nombre: data.nombre,
+      apellidos: data.apellidos,
+      correo: data.correo,
+      password: data.password,
+      // Todos los registros nuevos entran como USER (nunca ADMIN directo)
+      rol: 'USER',
+      // Estado preparado para futura verificación por correo
+      estadoVerificacion: 'pendiente_verificacion',
+      telefono: '',
+      ciudad: '',
+      linkedin: '',
+      github: ''
+    };
+    state.usuarios.push(nuevo);
+    return Promise.resolve({ ...nuevo });
+  },
+
+  // Futuro backend: POST /api/auth/logout
+  // (en un backend con JWT normalmente solo se invalida el token en cliente
+  // o se añade a una lista negra en el servidor)
+  logout() {
+    state.currentUser = null;
+    state.authToken = null;
+    return Promise.resolve({ success: true });
+  },
 
   // ---------- VACANTES ----------
   getVacantes() {
@@ -768,19 +1184,36 @@ const api = {
   },
 
   // ---------- USUARIOS ----------
+  // Futuro backend: requiere rol ADMIN (middleware de autorización)
   getUsuarios() {
-    return Promise.resolve([...state.usuarios]);
+    return Promise.resolve(state.usuarios.map(stripPassword));
   },
   createUsuario(data) {
-    const nuevo = { id: nextUsuarioId++, ...data };
+    const existe = state.usuarios.find(u => u.correo.toLowerCase() === data.correo.toLowerCase());
+    if (existe) {
+      return Promise.reject(new Error('Ya existe un usuario con ese correo.'));
+    }
+    const nuevo = {
+      id: nextUsuarioId++,
+      nombre: data.nombre,
+      apellidos: data.apellidos || '',
+      correo: data.correo,
+      password: data.password || 'changeme123',
+      rol: data.rol || 'USER',
+      estadoVerificacion: data.estadoVerificacion || 'pendiente_verificacion',
+      telefono: data.telefono || '',
+      ciudad: data.ciudad || '',
+      linkedin: data.linkedin || '',
+      github: data.github || ''
+    };
     state.usuarios.push(nuevo);
-    return Promise.resolve(nuevo);
+    return Promise.resolve(stripPassword(nuevo));
   },
   updateUsuario(id, data) {
     const idx = state.usuarios.findIndex(u => u.id === id);
     if (idx !== -1) {
       state.usuarios[idx] = { ...state.usuarios[idx], ...data };
-      return Promise.resolve(state.usuarios[idx]);
+      return Promise.resolve(stripPassword(state.usuarios[idx]));
     }
     return Promise.reject(new Error('Usuario no encontrado'));
   },
@@ -800,64 +1233,235 @@ const api = {
   },
 
   // ---------- PERFIL ----------
-  getPerfil() {
-    return Promise.resolve({ ...state.perfil });
+  // Futuro backend: GET /api/profile (requiere token JWT)
+  getProfile() {
+    if (!state.currentUser) return Promise.reject(new Error('No hay sesión activa'));
+    const user = state.usuarios.find(u => u.id === state.currentUser.id);
+    return Promise.resolve(stripPassword(user));
   },
-  updatePerfil(data) {
-    state.perfil = { ...state.perfil, ...data };
-    return Promise.resolve({ ...state.perfil });
+  // Futuro backend: PUT /api/profile (requiere token JWT)
+  // Solo permite editar campos personales; rol y estadoVerificacion
+  // se ignoran aunque vengan en el payload (se validan en backend real).
+  updateProfile(data) {
+    const idx = state.usuarios.findIndex(u => u.id === state.currentUser.id);
+    if (idx === -1) return Promise.reject(new Error('Usuario no encontrado'));
+
+    // Campos editables permitidos
+    const { nombre, apellidos, correo, telefono, ciudad, linkedin, github } = data;
+    state.usuarios[idx] = {
+      ...state.usuarios[idx],
+      nombre, apellidos, correo, telefono, ciudad, linkedin, github
+      // rol y estadoVerificacion NO se modifican aquí
+    };
+
+    // Sincroniza la sesión actual con los nuevos datos
+    state.currentUser = stripPassword(state.usuarios[idx]);
+    return Promise.resolve({ ...state.currentUser });
+  },
+
+  // ---------- SOLICITUDES DE ADMINISTRADOR ----------
+  // Futuro backend: POST /api/admin-requests
+  createAdminRequest() {
+    // Evita duplicar solicitudes pendientes para el mismo usuario
+    const yaExiste = state.adminRequests.find(
+      r => r.usuarioId === state.currentUser.id && r.estado === 'PENDIENTE'
+    );
+    if (yaExiste) {
+      return Promise.reject(new Error('Ya tienes una solicitud pendiente.'));
+    }
+    const nueva = {
+      id: nextAdminRequestId++,
+      usuarioId: state.currentUser.id,
+      nombre: state.currentUser.nombre + ' ' + state.currentUser.apellidos,
+      correo: state.currentUser.correo,
+      fecha: new Date().toISOString().slice(0, 10),
+      estado: 'PENDIENTE'
+    };
+    state.adminRequests.push(nueva);
+    return Promise.resolve(nueva);
+  },
+  // Futuro backend: GET /api/admin-requests (requiere rol ADMIN)
+  getAdminRequests() {
+    return Promise.resolve([...state.adminRequests]);
+  },
+  // Futuro backend: PUT /api/admin-requests/:id (requiere rol ADMIN)
+  resolveAdminRequest(id, estado) {
+    const idx = state.adminRequests.findIndex(r => r.id === id);
+    if (idx === -1) return Promise.reject(new Error('Solicitud no encontrada'));
+
+    state.adminRequests[idx].estado = estado;
+
+    // Si se aprueba, el usuario solicitante pasa a ser ADMIN
+    if (estado === 'APROBADA') {
+      const usuarioIdx = state.usuarios.findIndex(u => u.id === state.adminRequests[idx].usuarioId);
+      if (usuarioIdx !== -1) {
+        state.usuarios[usuarioIdx].rol = 'ADMIN';
+        // Si el usuario afectado es el que tiene la sesión activa, actualizarla
+        if (state.currentUser && state.currentUser.id === state.usuarios[usuarioIdx].id) {
+          state.currentUser = stripPassword(state.usuarios[usuarioIdx]);
+        }
+      }
+    }
+
+    return Promise.resolve(state.adminRequests[idx]);
   }
 };
 
+// Quita la contraseña de un objeto usuario antes de "enviarlo" al frontend
+// (simula lo que haría el backend al serializar la respuesta)
+function stripPassword(user) {
+  if (!user) return user;
+  const { password, ...rest } = user;
+  return { ...rest };
+}
+
 
 /* =====================================================================
-   RENDERIZADO
+   AUTENTICACIÓN
    ---------------------------------------------------------------------
-   Funciones encargadas de pintar datos del estado en el DOM.
+   Maneja el formulario de login/registro, el cambio de pestañas y
+   el cierre de sesión. Controla la visibilidad de la pantalla de
+   autenticación vs. la aplicación principal (#appRoot).
    ===================================================================== */
 
-// --- Helpers de formato ---
-function formatCurrency(value) {
-  if (value === null || value === undefined || value === '') return '—';
-  return '$' + Number(value).toLocaleString('es-CO');
+// --- Cambio de pestañas Login / Registro ---
+document.querySelectorAll('.auth-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const target = tab.dataset.tab;
+
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t === tab));
+    document.getElementById('formLogin').classList.toggle('active', target === 'login');
+    document.getElementById('formRegister').classList.toggle('active', target === 'register');
+
+    // Limpia mensajes de error al cambiar de pestaña
+    hideAuthMessages();
+  });
+});
+
+function hideAuthMessages() {
+  document.getElementById('loginError').classList.remove('active');
+  document.getElementById('loginSuccess').classList.remove('active');
+  document.getElementById('registerError').classList.remove('active');
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '—';
-  const [y, m, d] = dateStr.split('-');
-  return `${d}/${m}/${y}`;
+function showAuthError(elementId, message) {
+  const el = document.getElementById(elementId);
+  el.textContent = message;
+  el.classList.add('active');
 }
 
-// --- Badges de estado de vacante ---
-function badgeEstadoVacante(estado) {
-  const map = {
-    'Aplicada': 'badge-aplicada',
-    'En revisión': 'badge-revision',
-    'Entrevista': 'badge-entrevista',
-    'Oferta': 'badge-oferta',
-    'Rechazada': 'badge-rechazada'
-  };
-  const cls = map[estado] || 'badge-aplicada';
-  return `<span class="badge ${cls}">${estado}</span>`;
+// --- Formulario de LOGIN ---
+document.getElementById('formLogin').addEventListener('submit', (e) => {
+  e.preventDefault();
+  hideAuthMessages();
+
+  const correo = document.getElementById('loginCorreo').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  api.login(correo, password)
+    .then(({ token, user }) => {
+      state.authToken = token;
+      state.currentUser = stripPassword(user);
+      enterApp();
+    })
+    .catch(err => {
+      showAuthError('loginError', err.message);
+    });
+});
+
+// --- Formulario de REGISTRO ---
+document.getElementById('formRegister').addEventListener('submit', (e) => {
+  e.preventDefault();
+  hideAuthMessages();
+
+  const nombre = document.getElementById('registerNombre').value.trim();
+  const apellidos = document.getElementById('registerApellidos').value.trim();
+  const correo = document.getElementById('registerCorreo').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+
+  if (password !== passwordConfirm) {
+    showAuthError('registerError', 'Las contraseñas no coinciden.');
+    return;
+  }
+  if (password.length < 6) {
+    showAuthError('registerError', 'La contraseña debe tener al menos 6 caracteres.');
+    return;
+  }
+
+  api.register({ nombre, apellidos, correo, password })
+    .then(() => {
+      // Tras registrarse, mostramos un mensaje y cambiamos a la pestaña de login
+      document.getElementById('formRegister').reset();
+      document.querySelector('.auth-tab[data-tab="login"]').click();
+      document.getElementById('loginCorreo').value = correo;
+      const successEl = document.getElementById('loginSuccess');
+      successEl.textContent = 'Cuenta creada correctamente. Ya puedes iniciar sesión. (Verificación de correo pendiente)';
+      successEl.classList.add('active');
+    })
+    .catch(err => {
+      showAuthError('registerError', err.message);
+    });
+});
+
+// --- Cerrar sesión ---
+document.getElementById('btnLogout').addEventListener('click', () => {
+  api.logout().then(() => {
+    exitApp();
+  });
+});
+
+// --- Mostrar / ocultar pantallas según la sesión ---
+function enterApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appRoot').style.display = '';
+
+  // Limpia los formularios de auth por seguridad
+  document.getElementById('formLogin').reset();
+  document.getElementById('formRegister').reset();
+  hideAuthMessages();
+
+  // Aplica restricciones de menú según el rol y carga todos los datos
+  applyRoleVisibility();
+  navigateTo('dashboard');
+  renderAll();
 }
 
-// --- Badges de rol de usuario ---
-function badgeRolUsuario(rol) {
-  const map = {
-    'ADMIN': 'badge-admin',
-    'RECRUITER': 'badge-recruiter',
-    'USER': 'badge-user'
-  };
-  const cls = map[rol] || 'badge-user';
-  return `<span class="badge ${cls}">${rol}</span>`;
+function exitApp() {
+  document.getElementById('appRoot').style.display = 'none';
+  document.getElementById('authScreen').style.display = 'flex';
+
+  // Vuelve a la pestaña de login
+  document.querySelector('.auth-tab[data-tab="login"]').click();
 }
 
-// --- DASHBOARD ---
+// --- Control de visibilidad del menú según el rol ---
+function applyRoleVisibility() {
+  const isAdmin = state.currentUser && state.currentUser.rol === 'ADMIN';
+  const navUsuarios = document.getElementById('navUsuarios');
+  navUsuarios.style.display = isAdmin ? '' : 'none';
+
+  // Si un USER queda "atrapado" en la sección Usuarios (por ejemplo,
+  // si su rol cambió), lo regresamos al dashboard.
+  if (!isAdmin && document.getElementById('page-usuarios').classList.contains('active')) {
+    navigateTo('dashboard');
+  }
+}
+
+
+/* =====================================================================
+   RENDERIZADO — DASHBOARD
+   ---------------------------------------------------------------------
+   Calcula y pinta las tarjetas de estadísticas y la tabla de últimas
+   vacantes. Se invoca automáticamente cada vez que cambian los datos
+   de vacantes (crear, editar, eliminar o cambiar de estado).
+   ===================================================================== */
 function renderDashboard() {
   const vacantes = state.vacantes;
 
   const total = vacantes.length;
-  const aplicaciones = vacantes.filter(v => v.estado !== 'Aplicada' || true).length; // todas las registradas son aplicaciones enviadas
+  // Todas las vacantes registradas representan una aplicación enviada
+  const aplicaciones = total;
   const entrevistas = vacantes.filter(v => v.estado === 'Entrevista').length;
   const ofertas = vacantes.filter(v => v.estado === 'Oferta').length;
   const rechazos = vacantes.filter(v => v.estado === 'Rechazada').length;
@@ -901,7 +1505,61 @@ function renderDashboard() {
   `).join('');
 }
 
-// --- VACANTES ---
+
+/* =====================================================================
+   RENDERIZADO — VACANTES
+   ===================================================================== */
+
+// --- Helpers de formato ---
+function formatCurrency(value) {
+  if (value === null || value === undefined || value === '') return '—';
+  return '$' + Number(value).toLocaleString('es-CO');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const [y, m, d] = dateStr.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// --- Badges de estado de vacante ---
+function badgeEstadoVacante(estado) {
+  const map = {
+    'Aplicada': 'badge-aplicada',
+    'En revisión': 'badge-revision',
+    'Entrevista': 'badge-entrevista',
+    'Oferta': 'badge-oferta',
+    'Rechazada': 'badge-rechazada'
+  };
+  const cls = map[estado] || 'badge-aplicada';
+  return `<span class="badge ${cls}">${estado}</span>`;
+}
+
+// --- Badges de rol de usuario ---
+function badgeRolUsuario(rol) {
+  const map = {
+    'ADMIN': 'badge-admin',
+    'USER': 'badge-user'
+  };
+  const cls = map[rol] || 'badge-user';
+  return `<span class="badge ${cls}">${rol}</span>`;
+}
+
+// --- Badges de estado de verificación de correo ---
+function badgeVerificacion(estado) {
+  const labels = {
+    'pendiente_verificacion': 'Correo sin verificar',
+    'verificado': 'Correo verificado'
+  };
+  const texto = labels[estado] || labels['pendiente_verificacion'];
+  return `<span class="badge badge-${estado}">${texto}</span>`;
+}
+
+// --- Badges de estado de solicitud de administrador ---
+function badgeEstadoSolicitud(estado) {
+  return `<span class="badge badge-${estado}">${estado}</span>`;
+}
+
 function renderVacantes() {
   const tbody = document.getElementById('vacantesBody');
 
@@ -925,7 +1583,10 @@ function renderVacantes() {
   `).join('');
 }
 
-// --- SEGUIMIENTOS ---
+
+/* =====================================================================
+   RENDERIZADO — SEGUIMIENTOS
+   ===================================================================== */
 function renderSeguimientoSelect() {
   const select = document.getElementById('seguimientoVacante');
   if (state.vacantes.length === 0) {
@@ -962,43 +1623,153 @@ function renderSeguimientos() {
   }).join('');
 }
 
-// --- USUARIOS ---
+
+/* =====================================================================
+   RENDERIZADO — USUARIOS (solo ADMIN)
+   ===================================================================== */
 function renderUsuarios() {
+  const isAdmin = state.currentUser && state.currentUser.rol === 'ADMIN';
+
+  document.getElementById('usuariosDenied').style.display = isAdmin ? 'none' : '';
+  document.getElementById('usuariosContent').style.display = isAdmin ? '' : 'none';
+
+  if (!isAdmin) return;
+
   const tbody = document.getElementById('usuariosBody');
 
   if (state.usuarios.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">No hay usuarios registrados.</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">No hay usuarios registrados.</div></td></tr>`;
+  } else {
+    tbody.innerHTML = state.usuarios.map(u => `
+      <tr>
+        <td>${u.nombre} ${u.apellidos || ''}</td>
+        <td>${u.correo}</td>
+        <td>${badgeRolUsuario(u.rol)}</td>
+        <td>${badgeVerificacion(u.estadoVerificacion)}</td>
+        <td class="actions">
+          <button class="btn btn-sm btn-ghost" data-action="edit-usuario" data-id="${u.id}">Editar</button>
+          <button class="btn btn-sm btn-danger" data-action="delete-usuario" data-id="${u.id}">Eliminar</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  renderAdminRequests();
+}
+
+// --- Solicitudes de rol Administrador (vista ADMIN) ---
+function renderAdminRequests() {
+  const tbody = document.getElementById('adminRequestsBody');
+  if (!tbody) return;
+
+  if (state.adminRequests.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">No hay solicitudes de rol Administrador.</div></td></tr>`;
     return;
   }
 
-  tbody.innerHTML = state.usuarios.map(u => `
+  const ordenadas = [...state.adminRequests].sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
+
+  tbody.innerHTML = ordenadas.map(r => `
     <tr>
-      <td>${u.nombre}</td>
-      <td>${u.correo}</td>
-      <td>${badgeRolUsuario(u.rol)}</td>
+      <td>${r.nombre}</td>
+      <td>${r.correo}</td>
+      <td>${formatDate(r.fecha)}</td>
+      <td>${badgeEstadoSolicitud(r.estado)}</td>
       <td class="actions">
-        <button class="btn btn-sm btn-ghost" data-action="edit-usuario" data-id="${u.id}">Editar</button>
-        <button class="btn btn-sm btn-danger" data-action="delete-usuario" data-id="${u.id}">Eliminar</button>
+        ${r.estado === 'PENDIENTE' ? `
+          <button class="btn btn-sm btn-primary" data-action="approve-request" data-id="${r.id}">Aprobar</button>
+          <button class="btn btn-sm btn-danger" data-action="reject-request" data-id="${r.id}">Rechazar</button>
+        ` : '<span style="color:var(--text-dim); font-size:.8rem;">Resuelta</span>'}
       </td>
     </tr>
   `).join('');
 }
 
-// --- PERFIL ---
+
+/* =====================================================================
+   RENDERIZADO — PERFIL
+   ===================================================================== */
 function renderPerfil() {
-  const p = state.perfil;
+  const p = state.currentUser;
   if (!p) return;
 
-  document.getElementById('profileName').textContent = p.nombre;
+  document.getElementById('profileName').textContent = `${p.nombre} ${p.apellidos || ''}`.trim();
   document.getElementById('profileAvatar').textContent = p.nombre.charAt(0).toUpperCase();
-  document.getElementById('profileRoleBadge').outerHTML = badgeRolUsuario(p.rol).replace('<span', '<span id="profileRoleBadge"');
 
-  document.getElementById('perfilNombre').value = p.nombre;
-  document.getElementById('perfilCorreo').value = p.correo;
+  document.getElementById('profileRoleBadge').outerHTML =
+    badgeRolUsuario(p.rol).replace('<span', '<span id="profileRoleBadge"');
+  document.getElementById('profileVerificationBadge').outerHTML =
+    badgeVerificacion(p.estadoVerificacion).replace('<span', '<span id="profileVerificationBadge"');
+
+  document.getElementById('perfilNombre').value = p.nombre || '';
+  document.getElementById('perfilApellidos').value = p.apellidos || '';
+  document.getElementById('perfilCorreo').value = p.correo || '';
+  document.getElementById('perfilTelefono').value = p.telefono || '';
+  document.getElementById('perfilCiudad').value = p.ciudad || '';
+  document.getElementById('perfilLinkedin').value = p.linkedin || '';
+  document.getElementById('perfilGithub').value = p.github || '';
   document.getElementById('perfilRol').value = p.rol;
+
+  // Actualiza el bloque de usuario en el sidebar
+  document.getElementById('sidebarAvatar').textContent = p.nombre.charAt(0).toUpperCase();
+  document.getElementById('sidebarUserName').textContent = `${p.nombre} ${p.apellidos || ''}`.trim();
+  document.getElementById('sidebarUserRole').textContent = p.rol;
+
+  renderAdminRequestStatus();
 }
 
-// Renderiza todo lo que depende de los datos actuales
+// --- Estado de la solicitud de rol Administrador en Perfil ---
+function renderAdminRequestStatus() {
+  const container = document.getElementById('adminRequestStatus');
+  const btn = document.getElementById('btnSolicitarAdmin');
+  if (!container || !btn) return;
+
+  const p = state.currentUser;
+
+  // Si ya es ADMIN, no tiene sentido mostrar el botón de solicitud
+  if (p.rol === 'ADMIN') {
+    container.innerHTML = `<p style="color:var(--text-dim); font-size:.85rem;">Ya cuentas con el rol de Administrador.</p>`;
+    btn.style.display = 'none';
+    return;
+  }
+
+  // Busca la solicitud más reciente del usuario actual
+  const misSolicitudes = state.adminRequests.filter(r => r.usuarioId === p.id);
+  const ultima = misSolicitudes.length
+    ? misSolicitudes.reduce((a, b) => (a.fecha > b.fecha ? a : b))
+    : null;
+
+  if (!ultima) {
+    container.innerHTML = '';
+    btn.style.display = 'inline-flex';
+    btn.disabled = false;
+    btn.textContent = 'Solicitar rol Administrador';
+    return;
+  }
+
+  if (ultima.estado === 'PENDIENTE') {
+    container.innerHTML = `<p style="font-size:.85rem;">Estado de tu solicitud: ${badgeEstadoSolicitud(ultima.estado)}</p>`;
+    btn.style.display = 'inline-flex';
+    btn.disabled = true;
+    btn.textContent = 'Solicitud en revisión';
+  } else if (ultima.estado === 'RECHAZADA') {
+    container.innerHTML = `<p style="font-size:.85rem;">Tu última solicitud fue ${badgeEstadoSolicitud(ultima.estado)}. Puedes intentarlo de nuevo.</p>`;
+    btn.style.display = 'inline-flex';
+    btn.disabled = false;
+    btn.textContent = 'Solicitar rol Administrador';
+  } else { // APROBADA
+    container.innerHTML = `<p style="font-size:.85rem;">Tu solicitud fue ${badgeEstadoSolicitud(ultima.estado)}.</p>`;
+    btn.style.display = 'none';
+  }
+}
+
+
+/* =====================================================================
+   RENDERIZADO — GENERAL
+   ===================================================================== */
+// Renderiza todo lo que depende de los datos actuales.
+// Se llama tras cada operación de creación, edición o eliminación,
+// garantizando que el Dashboard y las tablas siempre estén sincronizados.
 function renderAll() {
   renderDashboard();
   renderVacantes();
@@ -1010,12 +1781,8 @@ function renderAll() {
 
 
 /* =====================================================================
-   EVENTOS
-   ---------------------------------------------------------------------
-   Manejo de navegación, formularios y acciones de tabla.
+   EVENTOS — NAVEGACIÓN
    ===================================================================== */
-
-// --- Navegación entre páginas ---
 const pageMeta = {
   dashboard: { title: 'Dashboard', subtitle: 'Resumen general de tu proceso de búsqueda' },
   vacantes: { title: 'Vacantes', subtitle: 'Gestiona las vacantes a las que aplicas' },
@@ -1025,6 +1792,11 @@ const pageMeta = {
 };
 
 function navigateTo(pageId) {
+  // Bloqueo de navegación manual: un USER no puede entrar a "usuarios"
+  if (pageId === 'usuarios' && (!state.currentUser || state.currentUser.rol !== 'ADMIN')) {
+    pageId = 'usuarios'; // se mantiene en "usuarios" pero se mostrará la vista de acceso denegado
+  }
+
   // Botones del menú
   document.querySelectorAll('.nav-link').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.page === pageId);
@@ -1039,6 +1811,11 @@ function navigateTo(pageId) {
   const meta = pageMeta[pageId];
   document.getElementById('pageTitle').textContent = meta.title;
   document.getElementById('pageSubtitle').textContent = meta.subtitle;
+
+  // Si entra a usuarios, asegúrate de refrescar la vista de permitido/denegado
+  if (pageId === 'usuarios') {
+    renderUsuarios();
+  }
 
   // Cerrar menú móvil al navegar
   document.getElementById('sidebar').classList.remove('open');
@@ -1055,7 +1832,10 @@ document.getElementById('menuToggle').addEventListener('click', () => {
   document.getElementById('sidebar').classList.toggle('open');
 });
 
-// --- Formulario de VACANTES (crear / editar) ---
+
+/* =====================================================================
+   EVENTOS — VACANTES
+   ===================================================================== */
 const formVacante = document.getElementById('formVacante');
 const btnVacanteCancel = document.getElementById('btnVacanteCancel');
 const btnVacanteSubmit = document.getElementById('btnVacanteSubmit');
@@ -1081,6 +1861,8 @@ formVacante.addEventListener('submit', (e) => {
     document.getElementById('vacanteId').value = '';
     btnVacanteSubmit.textContent = '+ Crear vacante';
     btnVacanteCancel.style.display = 'none';
+    // Recalcula Dashboard y demás tablas: crear, editar o cambiar de
+    // estado una vacante siempre dispara renderAll().
     renderAll();
   });
 });
@@ -1119,7 +1901,10 @@ document.getElementById('vacantesBody').addEventListener('click', (e) => {
   }
 });
 
-// --- Formulario de SEGUIMIENTOS ---
+
+/* =====================================================================
+   EVENTOS — SEGUIMIENTOS
+   ===================================================================== */
 const formSeguimiento = document.getElementById('formSeguimiento');
 
 formSeguimiento.addEventListener('submit', (e) => {
@@ -1137,11 +1922,15 @@ formSeguimiento.addEventListener('submit', (e) => {
 
   api.createSeguimiento(data).then(() => {
     formSeguimiento.reset();
+    document.getElementById('seguimientoFecha').valueAsDate = new Date();
     renderAll();
   });
 });
 
-// --- Formulario de USUARIOS (crear / editar) ---
+
+/* =====================================================================
+   EVENTOS — USUARIOS (solo ADMIN)
+   ===================================================================== */
 const formUsuario = document.getElementById('formUsuario');
 const btnUsuarioCancel = document.getElementById('btnUsuarioCancel');
 const btnUsuarioSubmit = document.getElementById('btnUsuarioSubmit');
@@ -1160,13 +1949,17 @@ formUsuario.addEventListener('submit', (e) => {
     ? api.updateUsuario(Number(id), data)
     : api.createUsuario(data);
 
-  action.then(() => {
-    formUsuario.reset();
-    document.getElementById('usuarioId').value = '';
-    btnUsuarioSubmit.textContent = '+ Crear usuario';
-    btnUsuarioCancel.style.display = 'none';
-    renderAll();
-  });
+  action
+    .then(() => {
+      formUsuario.reset();
+      document.getElementById('usuarioId').value = '';
+      btnUsuarioSubmit.textContent = '+ Crear usuario';
+      btnUsuarioCancel.style.display = 'none';
+      renderAll();
+    })
+    .catch(err => {
+      alert(err.message);
+    });
 });
 
 btnUsuarioCancel.addEventListener('click', () => {
@@ -1176,8 +1969,8 @@ btnUsuarioCancel.addEventListener('click', () => {
   btnUsuarioCancel.style.display = 'none';
 });
 
-// Acciones de tabla de usuarios (editar / eliminar)
-document.getElementById('usuariosBody').addEventListener('click', (e) => {
+// Acciones de tabla de usuarios (editar / eliminar) y solicitudes de admin
+document.getElementById('usuariosContent').addEventListener('click', (e) => {
   const btn = e.target.closest('button[data-action]');
   if (!btn) return;
   const id = Number(btn.dataset.id);
@@ -1199,25 +1992,58 @@ document.getElementById('usuariosBody').addEventListener('click', (e) => {
     state.pendingDelete = { type: 'usuario', id };
     openConfirmModal('¿Seguro que deseas eliminar este usuario del sistema?');
   }
+
+  if (btn.dataset.action === 'approve-request' || btn.dataset.action === 'reject-request') {
+    const nuevoEstado = btn.dataset.action === 'approve-request' ? 'APROBADA' : 'RECHAZADA';
+    api.resolveAdminRequest(id, nuevoEstado).then(() => {
+      applyRoleVisibility();
+      renderAll();
+    });
+  }
 });
 
-// --- Formulario de PERFIL ---
+
+/* =====================================================================
+   EVENTOS — PERFIL
+   ===================================================================== */
 const formPerfil = document.getElementById('formPerfil');
 
 formPerfil.addEventListener('submit', (e) => {
   e.preventDefault();
 
+  // Solo se envían los campos editables. "rol" y "estadoVerificacion"
+  // se mantienen intactos: el backend real debe ignorarlos incluso si
+  // llegan en el payload.
   const data = {
     nombre: document.getElementById('perfilNombre').value.trim(),
-    correo: document.getElementById('perfilCorreo').value.trim()
+    apellidos: document.getElementById('perfilApellidos').value.trim(),
+    correo: document.getElementById('perfilCorreo').value.trim(),
+    telefono: document.getElementById('perfilTelefono').value.trim(),
+    ciudad: document.getElementById('perfilCiudad').value.trim(),
+    linkedin: document.getElementById('perfilLinkedin').value.trim(),
+    github: document.getElementById('perfilGithub').value.trim()
   };
 
-  api.updatePerfil(data).then(() => {
+  api.updateProfile(data).then(() => {
     renderAll();
   });
 });
 
-// --- Modal de confirmación de eliminación ---
+// --- Botón: Solicitar rol Administrador ---
+document.getElementById('btnSolicitarAdmin').addEventListener('click', () => {
+  api.createAdminRequest()
+    .then(() => {
+      renderAdminRequestStatus();
+    })
+    .catch(err => {
+      alert(err.message);
+    });
+});
+
+
+/* =====================================================================
+   EVENTOS — MODAL DE CONFIRMACIÓN DE ELIMINACIÓN
+   ===================================================================== */
 const confirmModal = document.getElementById('confirmModal');
 const confirmMessage = document.getElementById('confirmMessage');
 
@@ -1248,6 +2074,7 @@ document.getElementById('confirmAccept').addEventListener('click', () => {
 
   action.then(() => {
     closeConfirmModal();
+    // Eliminar una vacante también recalcula automáticamente el Dashboard
     renderAll();
   });
 });
@@ -1262,25 +2089,15 @@ confirmModal.addEventListener('click', (e) => {
    INICIALIZACIÓN
    ---------------------------------------------------------------------
    Carga datos simulados iniciales (a futuro: peticiones reales al API)
-   y renderiza la aplicación por primera vez.
+   y deja la aplicación lista mostrando la pantalla de autenticación.
    ===================================================================== */
 function seedData() {
-  // Vacantes de ejemplo
-  const vacantesSeed = [
-    { empresa: 'Nimbus Tech', cargo: 'Desarrollador Frontend', salario: 4500000, ciudad: 'Bogotá', estado: 'Entrevista' },
-    { empresa: 'DataForge', cargo: 'Analista de Datos', salario: 4000000, ciudad: 'Medellín', estado: 'En revisión' },
-    { empresa: 'CloudNine SAS', cargo: 'Ingeniero Backend', salario: 5200000, ciudad: 'Remoto', estado: 'Aplicada' },
-    { empresa: 'Vertex Software', cargo: 'Desarrollador Full Stack', salario: 4800000, ciudad: 'Cali', estado: 'Oferta' },
-    { empresa: 'PixelWorks', cargo: 'Diseñador UI/UX', salario: 3800000, ciudad: 'Bogotá', estado: 'Rechazada' }
-  ];
+  // Carga los usuarios de ejemplo (con contraseñas simuladas)
+  usuariosSeed.forEach(u => {
+    state.usuarios.push({ id: nextUsuarioId++, ...u });
+  });
 
-  // Usuarios de ejemplo
-  const usuariosSeed = [
-    { nombre: 'Laura Gómez', correo: 'laura.gomez@jobtracker.com', rol: 'ADMIN' },
-    { nombre: 'Carlos Pérez', correo: 'carlos.perez@jobtracker.com', rol: 'RECRUITER' },
-    { nombre: 'Mariana Ríos', correo: 'mariana.rios@jobtracker.com', rol: 'USER' }
-  ];
-
+  // Carga las vacantes de ejemplo
   const vacantePromises = vacantesSeed.map(v => api.createVacante(v));
 
   return Promise.all(vacantePromises).then((vacantesCreadas) => {
@@ -1292,10 +2109,8 @@ function seedData() {
       { vacanteId: vacantesCreadas[3].id, fecha: '2026-06-05', tipo: 'Correo', descripcion: 'Recepción de carta de oferta laboral.' }
     ];
 
-    const usuarioPromises = usuariosSeed.map(u => api.createUsuario(u));
     const seguimientoPromises = seguimientosSeed.map(s => api.createSeguimiento(s));
-
-    return Promise.all([...usuarioPromises, ...seguimientoPromises]);
+    return Promise.all(seguimientoPromises);
   });
 }
 
@@ -1303,15 +2118,15 @@ function init() {
   // Establece la fecha de hoy como valor por defecto en el formulario de seguimientos
   document.getElementById('seguimientoFecha').valueAsDate = new Date();
 
-  // Perfil simulado del usuario actual (a futuro vendría de /api/perfil)
-  state.perfil = { nombre: 'Mariana Ríos', correo: 'mariana.rios@jobtracker.com', rol: 'USER' };
-
+  // Carga los datos simulados iniciales (vacantes, usuarios, seguimientos)
   seedData().then(() => {
-    renderAll();
+    // Al iniciar, no hay sesión activa: se muestra la pantalla de login/registro.
+    // appRoot permanece oculto hasta que el usuario inicie sesión correctamente.
   });
 }
 
 init();
+
 </script>
 </body>
 </html>
